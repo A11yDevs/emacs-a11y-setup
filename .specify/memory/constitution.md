@@ -1,12 +1,14 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 -> 1.2.0
+- Version change: 1.2.0 -> 1.3.0
 - Modified principles:
-   - III. Bootstrap progressivo, falante funcional e multiplataforma
-   - IX. Arquitetura modular por componentes do ecossistema
-   - X. Qualidade, testes de bootstrap e manutenção
-- Added sections:
+   - Nenhum
+- Modified sections:
+   - Decisões arquiteturais iniciais
    - Contrato de handoff entre installer e setup
+   - Governance
+- Added sections:
+   - Política de organização de repositórios
 - Removed sections:
   - Nenhuma
 - Templates requiring updates:
@@ -161,9 +163,45 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 * O handoff entre emacs-a11y-installer e emacs-a11y-setup MUST usar interface simples, estável, documentada e de baixo acoplamento.
 * O handoff MAY usar argumentos de linha de comando, variáveis de ambiente documentadas, arquivos de estado simples, chamada ao Emacs em modo batch ou chamada ao Emacs em modo interativo com emacs-a11y-setup-first-run.
 * O contrato de handoff MUST ser mínimo e MUST NOT exigir que o installer conheça a estrutura interna do workspace.
+* O contrato de handoff MUST ser documentado de forma compartilhada e versionada para permitir consumo por repositórios separados.
 * O handoff MAY transportar apenas informações necessárias ao bootstrap: plataforma detectada, modo de instalação, caminho do workspace, caminho do Emacs, caminho do Emacspeak quando conhecido, backend TTS inicial quando conhecido, resultado do diagnóstico externo e próxima ação recomendada.
 * O emacs-a11y-setup MUST expor a entrada estável consumida pelo installer e MUST tratar a criação e manutenção do conteúdo interno do workspace como responsabilidade exclusiva.
 * Todo launcher criado pelo installer MUST ser simples e estável, MUST iniciar o Emacs usando o workspace separado do emacs-a11y, MUST evitar carregar ~/.emacs.d ou ~/.config/emacs por padrão, MUST apontar para entrada estável como emacs --init-directory <workspace> ou emacs -q -l <workspace>/init.el, MUST ser documentado no relatório de bootstrap, MUST ser validado pelo doctor/check do installer e MUST emitir mensagem clara com referência a logs em caso de falha.
+
+## Política de organização de repositórios
+
+* O ecossistema Emacs Acessível SHOULD ser organizado em repositórios separados por responsabilidade, tecnologia e ciclo de vida.
+* A separação de repositórios SHOULD preservar baixo acoplamento entre bootstrap externo, setup interno, empacotamento/distribuição e materiais auxiliares.
+* A integração entre repositórios MUST ocorrer por contratos versionados, documentados e testáveis, e MUST NOT depender de detalhes internos de implementação.
+* O emacs-a11y-installer SHOULD residir em repositório próprio.
+* Esse repositório MUST ser responsável pelo bootstrap externo em Python.
+* Seu ciclo de vida envolve empacotamento Python, CLI multiplataforma, testes Python, distribuição por canais como pip, pipx ou instaladores e integração com o sistema operacional.
+* Esse repositório MUST respeitar o contrato de handoff com o emacs-a11y-setup.
+* Esse repositório MUST NOT depender da estrutura interna do workspace mantido pelo emacs-a11y-setup.
+* O emacs-a11y-setup SHOULD residir em repositório próprio.
+* Esse repositório MUST ser responsável pelo pacote Emacs Lisp principal.
+* Seu ciclo de vida envolve testes Emacs Lisp, byte-compilation, comandos interativos dentro do Emacs, painel acessível, criação e manutenção do workspace, perfis, diagnóstico interno e configuração assistida.
+* Esse repositório MUST expor uma interface estável de entrada para o emacs-a11y-installer.
+* Esse repositório MUST documentar o contrato de handoff consumido pelo installer.
+* Um repositório de distribuição, como emacs-a11y, MAY atuar como agregador de empacotamento, integração Debian/Ubuntu, launchers, metapacotes, documentação operacional, scripts auxiliares e composição de artefatos.
+* Esse repositório MAY empacotar ou integrar componentes produzidos por emacs-a11y-installer e emacs-a11y-setup.
+* Esse repositório MUST respeitar os contratos públicos entre os componentes e MUST NOT depender de detalhes internos não documentados.
+* Launchers e empacotamentos específicos de sistema operacional MAY residir no repositório de distribuição quando fizer sentido operacional, desde que respeitem a interface estável definida para iniciar o workspace.
+* Repositórios auxiliares, como forks, overlays ou empacotamentos específicos do Emacspeak, MAY existir quando houver necessidade técnica clara.
+* Esses repositórios MUST documentar seu papel no ecossistema, sua relação com os demais componentes e seu ciclo de manutenção.
+* Dependências entre repositórios auxiliares e os componentes centrais MUST ser explícitas, versionadas e documentadas.
+* Contratos entre repositórios MUST ser documentados em arquivos como docs/handoff-contract.md, docs/repositories.md, README.md ou equivalente.
+* Mudanças que quebrem contratos entre repositórios MUST atualizar documentação, testes de handoff, versão compatível e notas de migração.
+* Releases dos repositórios centrais SHOULD declarar compatibilidade mínima com os demais componentes do ecossistema.
+* Sempre que possível, contratos devem usar interfaces simples, como comandos estáveis, variáveis de ambiente documentadas, arquivos de estado com schema versionado ou entrypoints Emacs Lisp documentados.
+* Um repositório MUST NOT depender de caminhos internos, layouts privados, nomes de arquivos internos ou estruturas não documentadas de outro repositório.
+* O emacs-a11y-installer MUST NOT assumir a estrutura interna do workspace do emacs-a11y-setup.
+* O repositório de distribuição MUST NOT duplicar lógica interna do emacs-a11y-setup quando puder consumir interfaces públicas.
+* O repositório de distribuição MUST NOT duplicar lógica de bootstrap do emacs-a11y-installer quando puder consumir o componente oficial.
+* Módulos Emacs Lisp existentes em repositórios de distribuição ou empacotamento SHOULD ser migrados gradualmente para o repositório emacs-a11y-setup quando representarem lógica interna do Emacs.
+* Launchers e scripts específicos de sistema operacional MAY permanecer em repositórios de distribuição ou bootstrap, pois pertencem à camada de integração com o sistema operacional.
+* Durante a migração, compatibilidade e documentação devem ser preservadas.
+* Migrações MUST evitar que usuários percam configurações ou tenham fluxos existentes quebrados sem aviso, migração ou fallback.
 
 ## Critérios de qualidade da constituição
 
@@ -243,4 +281,10 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
    * Emendas MUST ser propostas via PR com resumo de impacto, migração e riscos.
    * Ratificação exige revisão técnica e de acessibilidade por pelo menos um mantenedor ativo.
 
-**Version**: 1.2.0 | **Ratified**: 2026-06-03 | **Last Amended**: 2026-06-03
+14. Mudanças entre repositórios:
+   * Mudanças que alterem contratos públicos entre repositórios MUST atualizar documentação, testes e notas de compatibilidade.
+   * PRs que afetem integração entre repositórios MUST declarar impacto nos repositórios relacionados.
+   * Releases SHOULD declarar compatibilidade mínima entre emacs-a11y-installer, emacs-a11y-setup e repositórios de distribuição.
+   * Alterações que movam código entre repositórios MUST incluir plano de migração e preservação de compatibilidade.
+
+**Version**: 1.3.0 | **Ratified**: 2026-06-03 | **Last Amended**: 2026-06-03

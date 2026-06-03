@@ -7,6 +7,10 @@ Ecosystem architecture baseline:
 	and invokes setup through a stable handoff.
 - `emacs-a11y-setup`: in-Emacs control layer and logical owner of the separate workspace;
 	creates, configures, maintains, diagnoses and repairs the internal Emacs environment.
+- The ecosystem SHOULD prefer a multi-repository organization: `emacs-a11y-installer` for
+	external bootstrap, `emacs-a11y-setup` for the Emacs Lisp package, and an optional
+	distribution repository such as `emacs-a11y` for packaging, launchers and operating
+	system integration.
 
 Project governance and non-negotiable engineering/accessibility principles are
 defined in `.specify/memory/constitution.md`.
