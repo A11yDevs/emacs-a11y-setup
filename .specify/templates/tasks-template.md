@@ -56,7 +56,8 @@ description: "Task list template for feature implementation"
 - [ ] T005 [P] Define diagnostics-first tasks (doctor/check) before any install mutation
 - [ ] T006 [P] Define workspace isolation tasks to protect personal user configuration
 - [ ] T007 [P] Define installer/setup boundary tasks (`emacs-a11y-installer` vs `emacs-a11y-setup`)
-- [ ] T008 Define installation mode matrix tasks (`minimal`, `recommended`, `full`)
+- [ ] T008 [P] Define minimal handoff contract tasks (`CLI args`, env vars, state files, batch or interactive first run)
+- [ ] T009 Define installation mode matrix tasks (`minimal`, `recommended`, `full`)
 
 ---
 
@@ -68,17 +69,21 @@ description: "Task list template for feature implementation"
 
 Examples of foundational tasks (adjust based on your project):
 
-- [ ] T009 Setup database schema and migrations framework
-- [ ] T010 [P] Implement authentication/authorization framework
-- [ ] T011 [P] Setup API routing and middleware structure
-- [ ] T012 Create base models/entities that all stories depend on
-- [ ] T013 Configure error handling and logging infrastructure
-- [ ] T014 Setup environment configuration management
-- [ ] T015 [P] Add keyboard-only and screen-reader acceptance checks for critical flows
-- [ ] T016 [P] Add platform impact matrix tasks (Windows native, Debian/Ubuntu, macOS,
+- [ ] T010 Setup database schema and migrations framework
+- [ ] T011 [P] Implement authentication/authorization framework
+- [ ] T012 [P] Setup API routing and middleware structure
+- [ ] T013 Create base models/entities that all stories depend on
+- [ ] T014 Configure error handling and logging infrastructure
+- [ ] T015 Setup environment configuration management
+- [ ] T016 [P] Add keyboard-only and screen-reader acceptance checks for critical flows
+- [ ] T017 [P] Add platform impact matrix tasks (Windows native, Debian/Ubuntu, macOS,
       Android/Termux, WSL)
-- [ ] T017 [P] Add bootstrap validation tasks (batch Emacs, workspace, init load,
-      Emacspeak, emacspeak-setup.el, initial TTS/server, launcher, diagnostic report)
+- [ ] T018 [P] Add installer-side bootstrap validation tasks (Emacs, batch Emacs,
+      Emacspeak, initial TTS/server, setup invocation, handoff, launcher, no
+      personal config load, accessible bootstrap report)
+- [ ] T019 [P] Add setup-side workspace validation tasks (workspace creation,
+      init load, custom.el/profiles, Emacspeak in workspace, internal diagnostics,
+      voice/language/TTS config, internal reports)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

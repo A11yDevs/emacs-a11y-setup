@@ -147,8 +147,11 @@
 - **CA-007 Evidence and governance**: Link related issues, mandatory docs, known
   limitations, and PoC evidence when introducing new platforms/TTS backends.
 - **CA-008 Installer/setup architecture**: Define clear boundaries between
-  `emacs-a11y-installer` (bootstrap) and `emacs-a11y-setup` (in-Emacs control plane).
+  `emacs-a11y-installer` (OS-layer bootstrap and launcher owner) and
+  `emacs-a11y-setup` (in-Emacs control plane and logical owner of the workspace),
+  including the minimal stable handoff contract between them.
 - **CA-009 Installation modes**: Specify behavior and deliverables for `minimal`,
   `recommended` (default), and `full` modes.
 - **CA-010 Bootstrap acceptance**: State speaking-Emacs success criteria, fallback
-  recovery path, and mandatory bootstrap validation checks/reporting.
+  recovery path, launcher expectations, and mandatory installer/setup validation
+  checks and reporting.

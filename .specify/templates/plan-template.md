@@ -47,6 +47,9 @@
 - Installer/setup boundary gate: The plan MUST separate responsibilities between
   `emacs-a11y-installer` (external bootstrap) and `emacs-a11y-setup` (in-Emacs control
   and maintenance).
+- Handoff gate: The plan MUST define a minimal, stable handoff contract between
+  installer and setup, including allowed inputs, launcher ownership, and explicit
+  avoidance of installer dependence on internal workspace structure.
 - Platform gate: The plan MUST analyze impact for Windows native, Debian/Ubuntu,
   macOS, Android/Termux, and WSL, with explicit justification for any exclusions.
 - Workspace isolation gate: The plan MUST preserve user personal Emacs config and use
@@ -57,9 +60,11 @@
   an accessible recovery path via terminal/log guidance.
 - Installation modes gate: The plan MUST document scope differences for `minimal`,
   `recommended` (default), and `full` installation modes.
-- Bootstrap validation gate: The plan MUST include basic bootstrap checks (batch Emacs,
-  workspace creation, workspace init load, Emacspeak and `emacspeak-setup.el`, initial
-  TTS/server, launcher startup, accessible diagnostic report).
+- Bootstrap validation gate: The plan MUST include installer-side checks (Emacs,
+  batch Emacs, Emacspeak, initial TTS/server, setup invocation, handoff, launcher,
+  no personal config load, accessible bootstrap report) and setup-side checks
+  (workspace creation, workspace init load, internal configuration validity,
+  Emacspeak in workspace, internal diagnostics/reporting).
 - Modularity gate: The plan MUST isolate platform-specific logic in dedicated modules.
 - Quality gate: The plan MUST include idempotency, clear error reporting, and test
   strategy for critical flows.

@@ -1,14 +1,12 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 -> 1.1.0
+- Version change: 1.1.0 -> 1.2.0
 - Modified principles:
-  - II. Integração nativa com Emacs e Emacspeak -> II. Integração nativa com Emacs, Emacspeak e painel interno de controle
-  - III. Bootstrap progressivo e multiplataforma -> III. Bootstrap progressivo, falante funcional e multiplataforma
-  - IX. Arquitetura modular -> IX. Arquitetura modular por componentes do ecossistema
-  - X. Qualidade, testes e manutenção -> X. Qualidade, testes de bootstrap e manutenção
+   - III. Bootstrap progressivo, falante funcional e multiplataforma
+   - IX. Arquitetura modular por componentes do ecossistema
+   - X. Qualidade, testes de bootstrap e manutenção
 - Added sections:
-  - Política de modos de instalação
-  - Critérios mínimos de bootstrap funcional por plataforma (Governance)
+   - Contrato de handoff entre installer e setup
 - Removed sections:
   - Nenhuma
 - Templates requiring updates:
@@ -42,9 +40,9 @@ Rationale: o fluxo nativo melhora consistência, ergonomia auditiva e capacidade
 
 ### III. Bootstrap progressivo, falante funcional e multiplataforma
 * O ecossistema MUST ser composto por pelo menos dois componentes principais: emacs-a11y-installer (bootstrap externo) e emacs-a11y-setup (camada interna no Emacs).
-* O emacs-a11y-installer MUST ser responsável por levar o usuário até um Emacs falante funcional sempre que a plataforma permitir.
+* O emacs-a11y-installer MUST atuar principalmente na camada do sistema operacional e MUST ser responsável por levar o usuário até um Emacs falante funcional sempre que a plataforma permitir.
 * O modo recomendado de instalação MUST entregar Emacs com fala funcional sempre que possível; quando isso não for viável automaticamente, o bootstrap MUST fornecer diagnóstico claro, instruções acessíveis e caminho de recuperação por terminal ou log.
-* O sucesso mínimo do bootstrap MUST ser abrir o ambiente Emacs Acessível por launcher ou comando documentado usando workspace separado.
+* O sucesso mínimo do bootstrap MUST ser invocar o emacs-a11y-setup por interface estável, abrir o ambiente Emacs Acessível por launcher ou comando documentado usando workspace separado e registrar resultado acessível do bootstrap.
 * O suporte MUST seguir a ordem de foco: Windows nativo, Debian/Ubuntu, macOS, Android/Termux e WSL.
 * VMs MUST ser alternativa pedagógica/fallback, nunca a única forma de uso.
 * Diferenças de plataforma MUST ser encapsuladas em módulos específicos.
@@ -92,7 +90,9 @@ Rationale: requisitos de acessibilidade só se sustentam quando testados em uso 
 
 ### IX. Arquitetura modular por componentes do ecossistema
 * Responsabilidades MUST ser separadas entre emacs-a11y-installer, emacs-a11y-setup, scripts de sistema, launchers por plataforma, workspace emacs-a11y, documentação, templates, testes e materiais pedagógicos.
-* O projeto MUST evitar acoplamento excessivo entre plataformas, e cada backend de instalação/TTS/servidor de fala MUST ser extensível.
+* O emacs-a11y-installer MUST conhecer apenas contratos estáveis de bootstrap, launcher e handoff; ele MUST NOT depender do layout interno completo do workspace, de cache, de preferências internas do usuário, da implementação interna de init.el ou de regras avançadas de perfil além do necessário para invocar o setup.
+* O emacs-a11y-setup MUST ser o dono lógico do workspace e MUST manter a evolução semântica do conteúdo interno do ambiente acessível.
+* O projeto MUST evitar acoplamento excessivo entre plataformas e entre installer e setup, e cada backend de instalação/TTS/servidor de fala MUST ser extensível.
 * Lógica para Windows nativo, Debian/Ubuntu, macOS, Android/Termux e WSL MUST residir em módulos separados.
 
 Rationale: modularidade reduz impacto de mudanças e facilita manutenção.
@@ -101,7 +101,8 @@ Rationale: modularidade reduz impacto de mudanças e facilita manutenção.
 * Funcionalidades críticas MUST ter testes automatizados quando viável, e scripts MUST ser idempotentes sempre que possível.
 * Erros MUST produzir mensagens claras com ação corretiva sugerida.
 * Implementações MUST priorizar legibilidade, manutenção simples e evolução incremental, evitando automações frágeis dependentes de estado implícito do sistema do usuário.
-* O emacs-a11y-installer MUST executar testes básicos de bootstrap: execução de Emacs em modo batch, criação do workspace separado, carregamento do init.el do workspace, instalação/localização do Emacspeak, carregamento de emacspeak-setup.el, presença de TTS/servidor inicial, teste mínimo de fala quando tecnicamente possível, verificação de launcher e geração de relatório acessível.
+* O emacs-a11y-installer MUST executar testes básicos de bootstrap: instalação/localização do Emacs, execução de Emacs em modo batch, instalação/localização do Emacspeak, disponibilidade de TTS/servidor inicial quando aplicável, localização ou invocação do emacs-a11y-setup, funcionamento do handoff para o setup, criação de launcher, validação de que o launcher aponta para o workspace separado sem carregar configuração pessoal padrão e geração de log e relatório acessíveis.
+* O emacs-a11y-setup MUST executar testes internos do workspace: criação do workspace, geração e carregamento do init.el do workspace, validade de custom.el e perfis internos, carregamento do Emacspeak no workspace, diagnóstico interno acessível, configuração de voz/idioma/TTS e exportação de relatórios internos.
 
 Rationale: estabilidade operacional e previsibilidade são partes do requisito de acessibilidade.
 
@@ -109,15 +110,19 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 
 * O ecossistema do projeto MUST incluir, no mínimo, dois componentes principais: emacs-a11y-installer e emacs-a11y-setup.
 * O emacs-a11y-installer MUST ser o bootstrap externo do projeto.
-* O emacs-a11y-setup MUST ser o pacote Emacs Lisp principal para diagnóstico e configuração assistida dentro do Emacs.
-* Scripts externos MUST ser usados quando necessários para bootstrap de plataforma, instalação do Emacs, instalação inicial do Emacspeak, dependências de sistema, TTS inicial e criação de launchers.
+* O emacs-a11y-setup MUST ser o pacote Emacs Lisp principal para diagnóstico, configuração assistida, manutenção e reparo do workspace dentro do Emacs.
+* Scripts externos MUST ser usados quando necessários para bootstrap de plataforma, instalação do Emacs, instalação inicial do Emacspeak, dependências de sistema, TTS inicial, diagnóstico externo e criação de launchers.
 * Scripts externos SHOULD permanecer modulares e auditáveis, MUST ser idempotentes quando possível e MUST ser seguros.
 * Scripts externos MUST NOT sobrescrever configurações pessoais do usuário e MUST registrar logs acessíveis.
-* O emacs-a11y-installer MUST instalar ou preparar: Emacs, Emacspeak, dependências de sistema, TTS/servidor inicial, Git/curl/unzip (ou equivalentes), workspace separado, init.el do workspace, emacs-a11y-setup, launchers/atalhos e testes básicos.
-* O emacs-a11y-installer MUST evitar se tornar um configurador completo do Emacs; seu foco principal MUST ser bootstrap, instalação inicial, validação e abertura do ambiente acessível.
+* O emacs-a11y-installer MUST instalar ou localizar: Emacs, Emacspeak, dependências externas mínimas, TTS/servidor inicial quando aplicável e Git/curl/unzip (ou equivalentes).
+* O emacs-a11y-installer MUST instalar, localizar ou disponibilizar o emacs-a11y-setup o suficiente para invocá-lo em modo batch ou interativo.
+* O emacs-a11y-installer MUST executar diagnóstico externo inicial, criar launchers/atalhos ou comandos de inicialização por plataforma, validar esses launchers e gerar logs e relatórios acessíveis do bootstrap.
+* O emacs-a11y-installer MUST evitar se tornar um configurador completo do Emacs; seu foco principal MUST ser bootstrap, instalação inicial, validação, criação de launchers e abertura do ambiente acessível.
+* O emacs-a11y-installer MUST NOT governar a estrutura interna do workspace e MUST NOT depender do layout completo de profiles, da estrutura interna de cache, de preferências internas do usuário, da implementação interna de init.el ou de detalhes de load-path além do estritamente necessário para invocar o setup inicial.
+* O emacs-a11y-installer MAY conhecer apenas: caminho do Emacs, caminho do workspace, comando estável de inicialização, localização do emacs-a11y-setup, resultado do bootstrap e tipo de launcher adequado à plataforma.
 * O projeto MUST usar por padrão um workspace separado para o ambiente emacs-a11y.
 * O workspace separado MUST ser customizável pelo usuário e versionável quando apropriado.
-* O projeto MUST fornecer formas simples de iniciar o Emacs com esse workspace.
+* O projeto MUST fornecer formas simples de iniciar o Emacs com esse workspace por meio de launchers ou comandos estáveis por plataforma.
 * A ordem de foco inicial MUST ser: Windows nativo, Debian/Ubuntu, macOS, Android/Termux e WSL.
 * Windows nativo MUST ser prioridade por maximizar alcance entre iniciantes.
 * Debian/Ubuntu MUST ser a plataforma técnica de referência.
@@ -131,9 +136,9 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 ## Política de modos de instalação
 
 * O ecossistema MUST oferecer os modos minimal, recommended e full.
-* O modo minimal MUST instalar Emacs, workspace separado, emacs-a11y-setup e launcher; esse modo MAY não garantir Emacspeak completo e SHOULD ser usado para depuração e cenários especiais.
-* O modo recommended MUST instalar Emacs, Emacspeak, TTS inicial, dependências principais, workspace separado, emacs-a11y-setup, launcher e testes básicos de bootstrap.
-* O modo full MUST incluir tudo do recommended e adicionar perfis e ferramentas pedagógicas, como Java, LaTeX, Git, exemplos, tutoriais e módulos adicionais.
+* O modo minimal MUST instalar ou localizar Emacs, disponibilizar o emacs-a11y-setup para invocação e oferecer Emacspeak mínimo quando viável; esse modo MAY criar launcher básico, MAY não concluir configuração completa de TTS/perfis e SHOULD ser usado para depuração e cenários especiais.
+* O modo recommended MUST ser o padrão; ele MUST instalar ou localizar Emacs, Emacspeak, TTS inicial e dependências principais, MUST invocar o emacs-a11y-setup para criação da configuração inicial, MUST criar launchers por plataforma apontando para o workspace separado, MUST executar doctor/check do fluxo e MUST tentar entregar um Emacs com fala funcional.
+* O modo full MUST incluir tudo do recommended e adicionar perfis e ferramentas pedagógicas, como Java, LaTeX, Git, exemplos, tutoriais e módulos adicionais, preferencialmente gerenciados pelo emacs-a11y-setup.
 * O modo recommended MUST ser o padrão por reduzir a barreira inicial para usuários cegos.
 
 ## Política de workspace separado
@@ -145,9 +150,20 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 * O workspace MUST suportar perfis, incluindo: iniciante, desenvolvimento Java, Emacspeak avançado, Termux, Windows nativo e oficina/curso.
 * A configuração padrão MUST ser conservadora, acessível e segura.
 * O modo recomendado de execução MUST iniciar o Emacs com diretório específico do emacs-a11y (por exemplo, emacs --init-directory ~/.emacs-a11y.d, emacs -q -l ~/.emacs-a11y.d/init.el ou launcher equivalente).
-* O bootstrap MUST criar o workspace separado; o setup MUST mantê-lo, diagnosticar problemas nele e oferecer gestão de perfis.
+* O emacs-a11y-setup MUST ser responsável por criar, estruturar, manter, diagnosticar, reparar e evoluir semanticamente o conteúdo interno do workspace, incluindo init.el, early-init.el, custom.el, perfis e preferências do usuário.
+* O emacs-a11y-installer MAY criar apenas o diretório raiz do workspace quando isso for necessário para permissões, preparação inicial ou criação de launchers, mas MUST NOT assumir controle da estrutura interna do workspace.
+* O emacs-a11y-installer MUST usar uma interface estável definida pelo emacs-a11y-setup para iniciar o ambiente e validar launchers.
 * O projeto MUST NOT alterar ~/.emacs.d ou ~/.config/emacs por padrão.
 * Integração com configurações pessoais MUST ser sempre opcional, explícita, reversível e documentada.
+
+## Contrato de handoff entre installer e setup
+
+* O handoff entre emacs-a11y-installer e emacs-a11y-setup MUST usar interface simples, estável, documentada e de baixo acoplamento.
+* O handoff MAY usar argumentos de linha de comando, variáveis de ambiente documentadas, arquivos de estado simples, chamada ao Emacs em modo batch ou chamada ao Emacs em modo interativo com emacs-a11y-setup-first-run.
+* O contrato de handoff MUST ser mínimo e MUST NOT exigir que o installer conheça a estrutura interna do workspace.
+* O handoff MAY transportar apenas informações necessárias ao bootstrap: plataforma detectada, modo de instalação, caminho do workspace, caminho do Emacs, caminho do Emacspeak quando conhecido, backend TTS inicial quando conhecido, resultado do diagnóstico externo e próxima ação recomendada.
+* O emacs-a11y-setup MUST expor a entrada estável consumida pelo installer e MUST tratar a criação e manutenção do conteúdo interno do workspace como responsabilidade exclusiva.
+* Todo launcher criado pelo installer MUST ser simples e estável, MUST iniciar o Emacs usando o workspace separado do emacs-a11y, MUST evitar carregar ~/.emacs.d ou ~/.config/emacs por padrão, MUST apontar para entrada estável como emacs --init-directory <workspace> ou emacs -q -l <workspace>/init.el, MUST ser documentado no relatório de bootstrap, MUST ser validado pelo doctor/check do installer e MUST emitir mensagem clara com referência a logs em caso de falha.
 
 ## Critérios de qualidade da constituição
 
@@ -204,10 +220,11 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 10. Critérios mínimos de bootstrap funcional por plataforma:
    * MUST instalar ou localizar Emacs.
    * MUST instalar ou localizar Emacspeak.
-   * MUST configurar ou localizar TTS/servidor inicial.
-   * MUST criar workspace separado.
-   * MUST criar launcher ou comando de inicialização documentado.
-   * MUST executar doctor/check básico.
+   * MUST configurar ou localizar TTS/servidor inicial quando aplicável.
+   * MUST localizar ou invocar o emacs-a11y-setup por interface estável.
+   * MUST criar launcher ou comando de inicialização documentado apontando para workspace separado.
+   * MUST validar que o launcher não carrega configuração pessoal padrão.
+   * MUST executar doctor/check básico do bootstrap e do handoff.
    * MUST gerar log acessível.
    * MUST documentar limitações conhecidas.
 
@@ -226,4 +243,4 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
    * Emendas MUST ser propostas via PR com resumo de impacto, migração e riscos.
    * Ratificação exige revisão técnica e de acessibilidade por pelo menos um mantenedor ativo.
 
-**Version**: 1.1.0 | **Ratified**: 2026-06-03 | **Last Amended**: 2026-06-03
+**Version**: 1.2.0 | **Ratified**: 2026-06-03 | **Last Amended**: 2026-06-03
