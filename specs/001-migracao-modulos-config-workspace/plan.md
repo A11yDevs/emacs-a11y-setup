@@ -262,7 +262,29 @@ test/
 - Funções públicas `emacs-a11y-setup-doctor` e `emacs-a11y-setup-doctor-batch` implementadas.
 - Relatório acessível e acionável gerado em `reports/`.
 
-### Phase 5 - Software Project Documentation in PlantUML
+### Phase 5 - Legacy Module Migration Documentation
+
+**Objective**: Produzir inventário inicial e plano de migração gradual dos módulos legados do repositório histórico.
+
+**Affected files**:
+- `docs/migration-from-emacs-a11y.md`
+- `specs/001-migracao-modulos-config-workspace/data-model.md`
+
+**Key decisions**:
+- Inventariar 13 módulos legados do `init.el` histórico.
+- Registrar decisão por item: migrar, adaptar, adiar ou descartar.
+
+**Tests**:
+- Revisão de consistência documental com spec/plan/contrato.
+
+**Risks**:
+- Migração prematura de módulos avançados fora de escopo.
+
+**Exit criteria**:
+- Inventário completo com status e justificativa por módulo.
+- Dependências externas e riscos explícitos por item.
+
+### Phase 6 - Software Project Documentation in PlantUML
 
 **Objective**: Produzir artefatos de documentação de projeto de software em PlantUML/Markdown na pasta `docs/` com rastreabilidade para `spec.md`, requisitos e testes.
 
@@ -293,28 +315,6 @@ test/
 - Todos os artefatos em `docs/` criados e consistentes com `spec.md`/`plan.md`.
 - `docs/README.md` lista e contextualiza todos os artefatos.
 - Fronteira de escopo entre `emacs-a11y-setup`, `emacs-a11y-installer` e distribuição explícita e inequívoca.
-
-### Phase 6 - Legacy Module Migration Documentation
-
-**Objective**: Produzir inventário inicial e plano de migração gradual dos módulos legados do repositório histórico.
-
-**Affected files**:
-- `docs/migration-from-emacs-a11y.md`
-- `specs/001-migracao-modulos-config-workspace/data-model.md`
-
-**Key decisions**:
-- Inventariar 13 módulos legados do `init.el` histórico.
-- Registrar decisão por item: migrar, adaptar, adiar ou descartar.
-
-**Tests**:
-- Revisão de consistência documental com spec/plan/contrato.
-
-**Risks**:
-- Migração prematura de módulos avançados fora de escopo.
-
-**Exit criteria**:
-- Inventário completo com status e justificativa por módulo.
-- Dependências externas e riscos explícitos por item.
 
 ### Phase 7 - Test Suite and Validation
 

@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+actor Usuario
+actor Installer as "Bootstrap Externo"
+actor Dist as "Distribuicao Externa"
+
+rectangle "emacs-a11y-setup (interno)" {
+  usecase "UC01 Primeiro uso\nworkspace isolado" as UC1
+  usecase "UC02 Bootstrap\nvia handoff" as UC2
+  usecase "UC03 Diagnostico\ninterno" as UC3
+  usecase "UC04 Perfil padrao\nconservador" as UC4
+}
+
+Usuario --> UC1
+Usuario --> UC3
+Usuario --> UC4
+Installer --> UC2
+Dist --> UC2
+
+note right of UC2
+Bootstrap externo consome contrato publico.
+Nao conhece estrutura interna do workspace.
+end note
+@enduml

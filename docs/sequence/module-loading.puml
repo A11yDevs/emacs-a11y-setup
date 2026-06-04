@@ -1,0 +1,21 @@
+@startuml
+participant "Modules Module" as MM
+participant "Essential Module" as EM
+participant "Optional Module" as OM
+
+MM -> EM: load essential
+alt essencial falha
+  MM --> MM: registra falha critica
+else essencial carrega
+  MM --> MM: status loaded
+end
+
+MM -> OM: load optional
+alt opcional falha
+  MM --> MM: registra aviso
+else opcional carrega
+  MM --> MM: status loaded
+end
+
+MM --> MM: retorna resultado resiliente
+@enduml

@@ -1,0 +1,52 @@
+;;; emacs-a11y-setup-workspace-tests.el --- ERT workspace tests -*- lexical-binding: t; -*-
+
+(require 'ert)
+(require 'emacs-a11y-setup)
+
+(ert-deftest emacs-a11y-setup-workspace-create-in-temp-dir ()
+  (let* ((tmp (make-temp-file "a11y-ws-" t))
+         (result (emacs-a11y-setup-create-workspace :workspace-path tmp)))
+    (should (plist-get result :valid))
+    (should (file-exists-p (expand-file-name "init.el" tmp)))
+    (should (file-exists-p (expand-file-name "early-init.el" tmp)))
+    (should (file-exists-p (expand-file-name "custom.el" tmp)))
+    (dolist (dir '("config" "profiles" "logs" "reports" "backups"))
+      (should (file-directory-p (expand-file-name dir tmp))))))
+
+(ert-deftest emacs-a11y-setup-workspace-idempotent ()
+  (let* ((tmp (make-temp-file "a11y-ws-idem-" t))
+         (first (emacs-a11y-setup-create-workspace :workspace-path tmp))
+         (second (emacs-a11y-setup-create-workspace :workspace-path tmp)))
+    (should (plist-get first :valid))
+    (should (plist-get second :valid))))
+
+(ert-deftest emacs-a11y-setup-workspace-preserves-personal-config ()
+  (let* ((tmp-home (make-temp-file "a11y-home-" t))
+         (user-emacs-directory (expand-file-name ".emacs.d" tmp-home))
+         (config-emacs (expand-file-name ".config/emacs" tmp-home)))
+    (make-directory user-emacs-directory t)
+    (make-directory config-emacs t)
+    (with-temp-file (expand-file-name "init.el" user-emacs-directory)
+      (insert "personal"))
+    (with-temp-file (expand-file-name "init.el" config-emacs)
+      (insert "personal"))
+    (let ((target (make-temp-file "a11y-ws-safe-" t)))
+      (emacs-a11y-setup-create-workspace :workspace-path target)
+      (should (string= (with-temp-buffer
+                         (insert-file-contents (expand-file-name "init.el" user-emacs-directory))
+                         (buffer-string))
+                       "personal"))
+      (should (string= (with-temp-buffer
+                         (insert-file-contents (expand-file-name "init.el" config-emacs))
+                         (buffer-string))
+                       "personal")))))
+
+(ert-deftest emacs-a11y-setup-workspace-repairs-partial-structure ()
+  (let* ((tmp (make-temp-file "a11y-ws-repair-" t)))
+    (make-directory (expand-file-name "config" tmp) t)
+    (emacs-a11y-setup-create-workspace :workspace-path tmp)
+    (dolist (dir '("profiles" "logs" "reports" "backups"))
+      (should (file-directory-p (expand-file-name dir tmp))))
+    (should (file-exists-p (expand-file-name "init.el" tmp)))))
+
+(provide 'emacs-a11y-setup-workspace-tests)

@@ -16,3 +16,8 @@ dist/
 # Undo-tree save-files
 *.~undo-tree
 .DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.log
+.env*

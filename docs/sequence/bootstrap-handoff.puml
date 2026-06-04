@@ -1,0 +1,20 @@
+@startuml
+actor Installer
+participant "emacs-a11y-setup-bootstrap" as Bootstrap
+participant "Handoff Module" as Handoff
+participant "Workspace Module" as WS
+participant "Doctor" as Doctor
+
+Installer -> Bootstrap: bootstrap(handoff-json)
+Bootstrap -> Handoff: process-handoff()
+Handoff --> Bootstrap: ok|erro + mensagens
+alt handoff valido
+  Bootstrap -> WS: create-workspace()
+  WS --> Bootstrap: workspace pronto
+  Bootstrap -> Doctor: run-doctor()
+  Doctor --> Bootstrap: relatorio
+  Bootstrap --> Installer: sucesso + diagnostico
+else handoff invalido
+  Bootstrap --> Installer: falha acessivel
+end
+@enduml

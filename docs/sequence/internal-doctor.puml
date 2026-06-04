@@ -1,0 +1,19 @@
+@startuml
+actor Usuario
+participant "Doctor" as Doctor
+participant "Workspace Module" as WS
+participant "Profiles Module" as Profiles
+participant "Modules Module" as Modules
+participant "Relatorios" as Reports
+
+Usuario -> Doctor: run-doctor()
+Doctor -> WS: workspace-status()
+WS --> Doctor: integridade + permissoes
+Doctor -> Profiles: apply-profile()
+Profiles --> Doctor: profile modules
+Doctor -> Modules: load-modules()
+Modules --> Doctor: essenciais/opcionais
+Doctor -> Reports: write report and log
+Reports --> Doctor: paths
+Doctor --> Usuario: texto com falhas, avisos e proximos passos
+@enduml

@@ -7,6 +7,51 @@ Validar o fluxo tecnico minimo do `emacs-a11y-setup` para workspace isolado, han
 - Emacs com suporte a execucao em batch.
 - Repositorio na branch `001-migracao-modulos-config-workspace`.
 
+## Carregamento local do pacote
+
+```bash
+emacs --batch -Q -L . -L lisp \
+  -l emacs-a11y-setup.el \
+  --eval '(princ "pacote carregado\n")'
+```
+
+## Primeiro uso com workspace isolado
+
+```bash
+emacs --batch -Q -L . -L lisp \
+  -l emacs-a11y-setup.el \
+  --eval '(emacs-a11y-setup-first-run :workspace-path "/tmp/emacs-a11y-workspace")'
+```
+
+## Doctor interativo e batch
+
+```bash
+emacs --batch -Q -L . -L lisp \
+  -l emacs-a11y-setup.el \
+  --eval '(emacs-a11y-setup-doctor "/tmp/emacs-a11y-workspace" '\''iniciante)'
+
+emacs --batch -Q -L . -L lisp \
+  -l emacs-a11y-setup.el \
+  --eval '(emacs-a11y-setup-doctor-batch "/tmp/emacs-a11y-workspace" '\''iniciante)'
+```
+
+## Simulacao de handoff JSON
+
+```bash
+cat > /tmp/handoff.json << 'JSON'
+{
+  "contract_version": "1.0",
+  "platform": "macos",
+  "bootstrap_mode": "recommended",
+  "workspace_path": "/tmp/emacs-a11y-workspace"
+}
+JSON
+
+emacs --batch -Q -L . -L lisp \
+  -l emacs-a11y-setup.el \
+  --eval '(prin1 (emacs-a11y-setup-bootstrap "/tmp/handoff.json"))'
+```
+
 ## Fluxo de validacao manual (MVP)
 
 1. Criar workspace em diretorio temporario (sem tocar `~/.emacs.d` e `~/.config/emacs`).
@@ -48,3 +93,9 @@ emacs --batch -Q \
 - `workspace_path` ausente ou invalido falha com orientacao clara.
 - Modulo opcional com falha nao bloqueia `doctor`.
 - Modulos com credenciais (ex.: IA) desabilitados por padrao no perfil conservador.
+
+## Compatibilidade futura de publicacao (FR-021)
+
+- Esta feature nao publica pacote em MELPA/ELPA.
+- O desenho atual preserva compatibilidade futura por seguir convencoes de pacote Emacs Lisp,
+  expor comandos publicos estaveis e manter testes ERT em batch.

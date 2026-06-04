@@ -14,3 +14,24 @@ Ecosystem architecture baseline:
 
 Project governance and non-negotiable engineering/accessibility principles are
 defined in `.specify/memory/constitution.md`.
+
+## Local package loading
+
+For local development, load the package with the repository root and `lisp/` on
+the load path:
+
+```bash
+emacs -Q --batch \
+	-L . -L lisp \
+	-l emacs-a11y-setup.el \
+	--eval '(princ "emacs-a11y-setup loaded\n")'
+```
+
+To run the first isolated workspace flow in batch mode:
+
+```bash
+emacs -Q --batch \
+	-L . -L lisp \
+	-l emacs-a11y-setup.el \
+	--eval '(emacs-a11y-setup-first-run :workspace-path "/tmp/emacs-a11y-workspace")'
+```
