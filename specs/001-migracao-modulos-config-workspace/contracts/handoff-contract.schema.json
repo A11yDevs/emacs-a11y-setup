@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a11ydevs.org/schemas/emacs-a11y/handoff-contract-v1.json",
+  "title": "Emacs A11y Setup Handoff Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "platform",
+    "bootstrap_mode",
+    "workspace_path"
+  ],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "windows-native",
+        "debian-ubuntu",
+        "macos",
+        "android-termux",
+        "wsl",
+        "unknown"
+      ]
+    },
+    "bootstrap_mode": {
+      "type": "string",
+      "enum": ["minimal", "recommended", "full", "unknown"]
+    },
+    "workspace_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "emacs_path": {
+      "type": "string"
+    },
+    "emacspeak_path": {
+      "type": "string"
+    },
+    "tts_backend": {
+      "type": "string"
+    },
+    "external_diagnostics_status": {
+      "type": "string",
+      "enum": ["ok", "warning", "error", "unknown"]
+    },
+    "external_diagnostics_report": {
+      "type": "string"
+    },
+    "next_action": {
+      "type": "string"
+    }
+  }
+}
