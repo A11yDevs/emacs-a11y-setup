@@ -7,6 +7,19 @@ Validar o fluxo tecnico minimo do `emacs-a11y-setup` para workspace isolado, han
 - Emacs com suporte a execucao em batch.
 - Repositorio na branch `001-migracao-modulos-config-workspace`.
 
+## Layout recomendado para desenvolvimento
+
+```text
+~/.emacs-a11y/
+  package/emacs-a11y-setup
+  workspace
+  bin/emacs-a11y
+  .env
+```
+
+- O launcher de desenvolvimento pode carregar `~/.emacs-a11y/.env`.
+- O workspace padrao e `~/.emacs-a11y/workspace`, salvo override por ambiente.
+
 ## Carregamento local do pacote
 
 ```bash
@@ -21,6 +34,33 @@ emacs --batch -Q -L . -L lisp \
 emacs --batch -Q -L . -L lisp \
   -l emacs-a11y-setup.el \
   --eval '(emacs-a11y-setup-first-run :workspace-path "/tmp/emacs-a11y-workspace")'
+```
+
+## Bootstrap local (atalho para desenvolvimento)
+
+```bash
+emacs --batch -Q -L . -L lisp \
+  -l emacs-a11y-setup.el \
+  --eval '(prin1 (emacs-a11y-setup-bootstrap-local))'
+```
+
+## Abertura interativa do workspace isolado
+
+Para abrir o workspace com `--init-directory`, o pacote precisa estar visivel no
+load path do Emacs. Em execucao local, use:
+
+```bash
+EMACSLOADPATH="$PWD:$PWD/lisp:" \
+  emacs --init-directory /tmp/emacs-a11y-workspace --debug-init
+```
+
+Se `EMACSLOADPATH` nao for definido corretamente, o `init.el` do workspace pode
+falhar ao carregar `emacs-a11y-setup`.
+
+Alternativamente, use o launcher de desenvolvimento:
+
+```bash
+bin/emacs-a11y --debug-init
 ```
 
 ## Doctor interativo e batch
@@ -88,6 +128,7 @@ emacs --batch -Q \
 ## Criticos de validacao
 
 - Configuracao pessoal do usuario nao alterada por padrao.
+- Workspace padrao resolvido em `~/.emacs-a11y/workspace` quando nao houver override.
 - Handoff sem `contract_version` falha com mensagem acessivel.
 - Handoff com versao incompatível falha com mensagem acessivel.
 - `workspace_path` ausente ou invalido falha com orientacao clara.

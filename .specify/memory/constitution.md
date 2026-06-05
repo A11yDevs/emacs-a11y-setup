@@ -151,7 +151,7 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 * O projeto MAY fornecer mecanismos de exportação, backup e restauração.
 * O workspace MUST suportar perfis, incluindo: iniciante, desenvolvimento Java, Emacspeak avançado, Termux, Windows nativo e oficina/curso.
 * A configuração padrão MUST ser conservadora, acessível e segura.
-* O modo recomendado de execução MUST iniciar o Emacs com diretório específico do emacs-a11y (por exemplo, emacs --init-directory ~/.emacs-a11y.d, emacs -q -l ~/.emacs-a11y.d/init.el ou launcher equivalente).
+* O modo recomendado de execução MUST iniciar o Emacs com diretório específico do emacs-a11y (por exemplo, emacs --init-directory ~/.emacs-a11y/workspace, emacs -q -l ~/.emacs-a11y/workspace/init.el ou launcher equivalente).
 * O emacs-a11y-setup MUST ser responsável por criar, estruturar, manter, diagnosticar, reparar e evoluir semanticamente o conteúdo interno do workspace, incluindo init.el, early-init.el, custom.el, perfis e preferências do usuário.
 * O emacs-a11y-installer MAY criar apenas o diretório raiz do workspace quando isso for necessário para permissões, preparação inicial ou criação de launchers, mas MUST NOT assumir controle da estrutura interna do workspace.
 * O emacs-a11y-installer MUST usar uma interface estável definida pelo emacs-a11y-setup para iniciar o ambiente e validar launchers.

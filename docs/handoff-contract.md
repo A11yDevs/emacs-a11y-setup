@@ -10,7 +10,7 @@ Entregar um contrato versionado entre bootstrap externo e setup interno, sem aco
   "contract_version": "1.0",
   "platform": "debian-ubuntu",
   "bootstrap_mode": "recommended",
-  "workspace_path": "/home/user/.emacs-a11y-setup"
+  "workspace_path": "/home/user/.emacs-a11y/workspace"
 }
 ```
 
@@ -33,3 +33,9 @@ Entregar um contrato versionado entre bootstrap externo e setup interno, sem aco
 - Ausencia de opcionais gera aviso e defaults seguros.
 - Erro de validacao deve ser textual, acessivel e acionavel.
 - O installer nao deve conhecer detalhes internos do workspace.
+- O launcher externo deve garantir que o pacote `emacs-a11y-setup` esteja no
+  load path (por exemplo via `EMACSLOADPATH`) ao abrir o `workspace_path` com
+  `--init-directory`.
+- O layout recomendado para runtime separa pacote e workspace sob uma raiz como
+  `~/.emacs-a11y`, mantendo `package/emacs-a11y-setup` e `workspace` como
+  diretorios distintos.

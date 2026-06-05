@@ -4,6 +4,7 @@
 
 - `emacs-a11y-setup-first-run`
 - `emacs-a11y-setup-bootstrap`
+- `emacs-a11y-setup-bootstrap-local`
 - `emacs-a11y-setup-create-workspace`
 - `emacs-a11y-setup-doctor`
 - `emacs-a11y-setup-doctor-batch`

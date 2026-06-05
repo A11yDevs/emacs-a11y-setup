@@ -21,6 +21,13 @@ Se nil, usa um padrao por plataforma."
                  (directory :tag "Caminho"))
   :group 'emacs-a11y-setup)
 
+(defcustom emacs-a11y-setup-home-path nil
+  "Diretorio raiz de dados do emacs-a11y.
+Se nil, usa um padrao por plataforma."
+  :type '(choice (const :tag "Padrao por plataforma" nil)
+                 (directory :tag "Caminho"))
+  :group 'emacs-a11y-setup)
+
 (defconst emacs-a11y-setup--workspace-required-dirs
   '("config" "profiles" "logs" "reports" "backups")
   "Diretorios obrigatorios do workspace.")
@@ -29,22 +36,34 @@ Se nil, usa um padrao por plataforma."
   '("init.el" "early-init.el" "custom.el")
   "Arquivos obrigatorios do workspace.")
 
-(defun emacs-a11y-setup--platform-default-workspace-path ()
-  "Retorna o caminho padrao do workspace por plataforma."
+(defun emacs-a11y-setup--platform-default-home-path ()
+  "Retorna o diretorio raiz padrao do emacs-a11y por plataforma."
   (let ((home (or (getenv "HOME") "~")))
     (cond
      ((eq system-type 'windows-nt)
-      (expand-file-name "AppData/Roaming/emacs-a11y-setup" home))
+      (expand-file-name "AppData/Roaming/emacs-a11y" home))
      ((eq system-type 'darwin)
-      (expand-file-name ".emacs-a11y-setup" home))
+      (expand-file-name ".emacs-a11y" home))
      ((eq system-type 'gnu/linux)
-      (expand-file-name ".emacs-a11y-setup" home))
+      (expand-file-name ".emacs-a11y" home))
      (t
-      (expand-file-name ".emacs-a11y-setup" home)))))
+      (expand-file-name ".emacs-a11y" home)))))
+
+(defun emacs-a11y-setup-resolve-home-path (&optional explicit-path)
+  "Resolve diretorio raiz usando EXPLICIT-PATH, ambiente, customizacao ou padrao."
+  (expand-file-name (or explicit-path
+                        (getenv "EMACS_A11Y_HOME")
+                        emacs-a11y-setup-home-path
+                        (emacs-a11y-setup--platform-default-home-path))))
+
+(defun emacs-a11y-setup--platform-default-workspace-path ()
+  "Retorna o caminho padrao do workspace por plataforma."
+  (expand-file-name "workspace" (emacs-a11y-setup-resolve-home-path)))
 
 (defun emacs-a11y-setup-resolve-workspace-path (&optional explicit-path)
-  "Resolve caminho do workspace usando EXPLICIT-PATH, customizacao ou padrao."
+  "Resolve caminho do workspace usando EXPLICIT-PATH, ambiente, customizacao ou padrao."
   (expand-file-name (or explicit-path
+                        (getenv "EMACS_A11Y_DEFAULT_WORKSPACE")
                         emacs-a11y-setup-workspace-path
                         (emacs-a11y-setup--platform-default-workspace-path))))
 
@@ -77,7 +96,23 @@ Se nil, usa um padrao por plataforma."
      ";; Arquivo gerado automaticamente por emacs-a11y-setup."
      ";; Nao carrega init pessoal em ~/.emacs.d ou ~/.config/emacs."
      ""
-     "(require 'emacs-a11y-setup)"
+     ";; Fallback opcional para launchers que definem a raiz do pacote."
+     "(let ((package-dir (getenv \"EMACS_A11Y_SETUP_PACKAGE_DIR\")))"
+     "  (when (and package-dir (file-directory-p package-dir))"
+     "    (add-to-list 'load-path package-dir)"
+     "    (let ((lisp-dir (expand-file-name \"lisp\" package-dir)))"
+     "      (when (file-directory-p lisp-dir)"
+     "        (add-to-list 'load-path lisp-dir)))))"
+     ""
+     "(condition-case err"
+     "    (require 'emacs-a11y-setup)"
+     "  (file-missing"
+     "   (error (concat"
+     "           \"Nao foi possivel carregar emacs-a11y-setup. \""
+     "           \"Defina EMACSLOADPATH com os diretorios do pacote \""
+     "           \"ou EMACS_A11Y_SETUP_PACKAGE_DIR apontando para a raiz do pacote. \""
+     "           \"Erro original: %s\")"
+     "          (error-message-string err))))"
      "(setq custom-file (expand-file-name \"custom.el\" user-emacs-directory))"
      "(load custom-file t)"
      "(when (fboundp 'emacs-a11y-setup--initialize-from-workspace)"

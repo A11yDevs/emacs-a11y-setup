@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+EMACS_A11Y_HOME="${EMACS_A11Y_HOME:-$HOME/.emacs-a11y}"
+EMACS_A11Y_ENV_FILE="${EMACS_A11Y_ENV_FILE:-$EMACS_A11Y_HOME/.env}"
+
+if [[ -f "$EMACS_A11Y_ENV_FILE" ]]; then
+  source "$EMACS_A11Y_ENV_FILE"
+fi
+
+EMACS_A11Y_HOME="${EMACS_A11Y_HOME:-$HOME/.emacs-a11y}"
+EMACS_A11Y_SETUP_PACKAGE_DIR="${EMACS_A11Y_SETUP_PACKAGE_DIR:-$EMACS_A11Y_HOME/package/emacs-a11y-setup}"
+EMACS_A11Y_DEFAULT_WORKSPACE="${EMACS_A11Y_DEFAULT_WORKSPACE:-$EMACS_A11Y_HOME/workspace}"
+EMACS_BIN="${EMACS_BIN:-emacs}"
+
+if [[ ! -d "$EMACS_A11Y_SETUP_PACKAGE_DIR" ]]; then
+  printf 'Pacote nao encontrado em %s\n' "$EMACS_A11Y_SETUP_PACKAGE_DIR" >&2
+  exit 1
+fi
+
+if [[ ! -f "$EMACS_A11Y_DEFAULT_WORKSPACE/init.el" ]]; then
+  printf 'Workspace nao inicializado em %s\n' "$EMACS_A11Y_DEFAULT_WORKSPACE" >&2
+  printf 'Execute o first-run antes de usar o launcher.\n' >&2
+  exit 1
+fi
+
+if [[ -n "${EMACSLOADPATH:-}" ]]; then
+  export EMACSLOADPATH="$EMACS_A11Y_SETUP_PACKAGE_DIR:$EMACS_A11Y_SETUP_PACKAGE_DIR/lisp:$EMACSLOADPATH"
+else
+  export EMACSLOADPATH="$EMACS_A11Y_SETUP_PACKAGE_DIR:$EMACS_A11Y_SETUP_PACKAGE_DIR/lisp:"
+fi
+
+export EMACS_A11Y_HOME
+export EMACS_A11Y_DEFAULT_WORKSPACE
+export EMACS_A11Y_SETUP_PACKAGE_DIR
+
+exec "$EMACS_BIN" --init-directory "$EMACS_A11Y_DEFAULT_WORKSPACE" "$@"
