@@ -50,7 +50,7 @@
 - Handoff gate: The plan MUST define a minimal, stable handoff contract between
   installer and setup, including allowed inputs, launcher ownership, and explicit
   avoidance of installer dependence on internal workspace structure.
-- Platform gate: The plan MUST analyze impact for Windows native, Debian/Ubuntu,
+-- Platform gate: The plan MUST analyze impact for Windows native, Linux (ex.: Debian/Ubuntu),
   macOS, Android/Termux, and WSL, with explicit justification for any exclusions.
 - Workspace isolation gate: The plan MUST preserve user personal Emacs config and use
   separate emacs-a11y workspace defaults.
