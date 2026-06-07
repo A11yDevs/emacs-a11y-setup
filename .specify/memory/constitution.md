@@ -45,7 +45,7 @@ Rationale: o fluxo nativo melhora consistência, ergonomia auditiva e capacidade
 * O emacs-a11y-installer MUST atuar principalmente na camada do sistema operacional e MUST ser responsável por levar o usuário até um Emacs falante funcional sempre que a plataforma permitir.
 * O modo recomendado de instalação MUST entregar Emacs com fala funcional sempre que possível; quando isso não for viável automaticamente, o bootstrap MUST fornecer diagnóstico claro, instruções acessíveis e caminho de recuperação por terminal ou log.
 * O sucesso mínimo do bootstrap MUST ser invocar o emacs-a11y-setup por interface estável, abrir o ambiente Emacs Acessível por launcher ou comando documentado usando workspace separado e registrar resultado acessível do bootstrap.
-* O suporte MUST seguir a ordem de foco: Windows nativo, Debian/Ubuntu, macOS, Android/Termux e WSL.
+* O suporte MUST seguir a ordem de foco: Windows nativo, Linux (ex.: Debian/Ubuntu), macOS, Android/Termux e WSL.
 * VMs MUST ser alternativa pedagógica/fallback, nunca a única forma de uso.
 * Diferenças de plataforma MUST ser encapsuladas em módulos específicos.
 
@@ -95,7 +95,7 @@ Rationale: requisitos de acessibilidade só se sustentam quando testados em uso 
 * O emacs-a11y-installer MUST conhecer apenas contratos estáveis de bootstrap, launcher e handoff; ele MUST NOT depender do layout interno completo do workspace, de cache, de preferências internas do usuário, da implementação interna de init.el ou de regras avançadas de perfil além do necessário para invocar o setup.
 * O emacs-a11y-setup MUST ser o dono lógico do workspace e MUST manter a evolução semântica do conteúdo interno do ambiente acessível.
 * O projeto MUST evitar acoplamento excessivo entre plataformas e entre installer e setup, e cada backend de instalação/TTS/servidor de fala MUST ser extensível.
-* Lógica para Windows nativo, Debian/Ubuntu, macOS, Android/Termux e WSL MUST residir em módulos separados.
+* Lógica para Windows nativo, Linux (ex.: Debian/Ubuntu), macOS, Android/Termux e WSL MUST residir em módulos separados.
 
 Rationale: modularidade reduz impacto de mudanças e facilita manutenção.
 
@@ -125,9 +125,9 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 * O projeto MUST usar por padrão um workspace separado para o ambiente emacs-a11y.
 * O workspace separado MUST ser customizável pelo usuário e versionável quando apropriado.
 * O projeto MUST fornecer formas simples de iniciar o Emacs com esse workspace por meio de launchers ou comandos estáveis por plataforma.
-* A ordem de foco inicial MUST ser: Windows nativo, Debian/Ubuntu, macOS, Android/Termux e WSL.
+* A ordem de foco inicial MUST ser: Windows nativo, Linux (ex.: Debian/Ubuntu), macOS, Android/Termux e WSL.
 * Windows nativo MUST ser prioridade por maximizar alcance entre iniciantes.
-* Debian/Ubuntu MUST ser a plataforma técnica de referência.
+* Debian/Ubuntu MAY ser tratada como referência de distribuição Linux para validações operacionais.
 * macOS com Homebrew e servidor swiftmac MUST ser tratado como plataforma importante.
 * Android/Termux MUST ser plataforma oficialmente considerada com base em PoCs reais.
 * WSL MUST ser alternativa útil para usuários Windows, sem substituir suporte nativo.
@@ -183,7 +183,7 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 * Seu ciclo de vida envolve testes Emacs Lisp, byte-compilation, comandos interativos dentro do Emacs, painel acessível, criação e manutenção do workspace, perfis, diagnóstico interno e configuração assistida.
 * Esse repositório MUST expor uma interface estável de entrada para o emacs-a11y-installer.
 * Esse repositório MUST documentar o contrato de handoff consumido pelo installer.
-* Um repositório de distribuição, como emacs-a11y, MAY atuar como agregador de empacotamento, integração Debian/Ubuntu, launchers, metapacotes, documentação operacional, scripts auxiliares e composição de artefatos.
+* Um repositório de distribuição, como emacs-a11y, MAY atuar como agregador de empacotamento, integração para Linux (ex.: Debian/Ubuntu), launchers, metapacotes, documentação operacional, scripts auxiliares e composição de artefatos.
 * Esse repositório MAY empacotar ou integrar componentes produzidos por emacs-a11y-installer e emacs-a11y-setup.
 * Esse repositório MUST respeitar os contratos públicos entre os componentes e MUST NOT depender de detalhes internos não documentados.
 * Launchers e empacotamentos específicos de sistema operacional MAY residir no repositório de distribuição quando fizer sentido operacional, desde que respeitem a interface estável definida para iniciar o workspace.
@@ -228,7 +228,7 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 
 4. Revisão por Pull Request:
    * Toda alteração funcional MUST passar por PR.
-   * Cada PR MUST incluir checklist de conformidade constitucional e impacto por plataforma (Windows nativo, Debian/Ubuntu, macOS, Android/Termux, WSL).
+   * Cada PR MUST incluir checklist de conformidade constitucional e impacto por plataforma (Windows nativo, Linux (ex.: Debian/Ubuntu), macOS, Android/Termux, WSL).
    * Mudanças no emacs-a11y-installer MUST documentar impacto de bootstrap por plataforma.
 
 5. Criação de issues:
