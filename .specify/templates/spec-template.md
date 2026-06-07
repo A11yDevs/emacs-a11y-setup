@@ -136,7 +136,7 @@
   outputs for core flows.
 - **CA-002 Emacs/Emacspeak**: Explain how the feature integrates with Emacs as primary
   interface and preserves structured auditory feedback.
-- **CA-003 Platform scope**: State impact across Windows native, Debian/Ubuntu, macOS,
+-- **CA-003 Platform scope**: State impact across Windows native, Linux (ex.: Debian/Ubuntu), macOS,
   Android/Termux, and WSL, including rationale for unsupported paths.
 - **CA-004 Workspace isolation**: Confirm no overwrite of personal Emacs configuration
   and use of separate emacs-a11y workspace by default.

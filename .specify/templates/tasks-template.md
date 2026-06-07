@@ -76,8 +76,8 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] T014 Configure error handling and logging infrastructure
 - [ ] T015 Setup environment configuration management
 - [ ] T016 [P] Add keyboard-only and screen-reader acceptance checks for critical flows
-- [ ] T017 [P] Add platform impact matrix tasks (Windows native, Debian/Ubuntu, macOS,
-      Android/Termux, WSL)
+-- [ ] T017 [P] Add platform impact matrix tasks (Windows native, Linux (ex.: Debian/Ubuntu), macOS,
+  Android/Termux, WSL)
 - [ ] T018 [P] Add installer-side bootstrap validation tasks (Emacs, batch Emacs,
       Emacspeak, initial TTS/server, setup invocation, handoff, launcher, no
       personal config load, accessible bootstrap report)
