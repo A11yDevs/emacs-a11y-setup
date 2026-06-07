@@ -1,0 +1,19 @@
+@startuml
+actor Usuario
+participant "emacs-a11y-setup-first-run" as FirstRun
+participant "Workspace Module" as WS
+participant "Profiles Module" as Profiles
+participant "Modules Registry" as Modules
+participant "Doctor" as Doctor
+
+Usuario -> FirstRun: first-run(workspace-path)
+FirstRun -> WS: create-workspace-structure()
+WS --> FirstRun: workspace valido
+FirstRun -> Profiles: apply-profile(iniciante)
+Profiles --> FirstRun: essential + optional seguros
+FirstRun -> Modules: load-modules()
+Modules --> FirstRun: status resiliente
+FirstRun -> Doctor: run-doctor()
+Doctor --> FirstRun: report-text
+FirstRun --> Usuario: resultado textual acessivel
+@enduml
