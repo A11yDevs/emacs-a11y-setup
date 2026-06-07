@@ -35,8 +35,8 @@ Generated tasks: T001..T034
 
 The Constitution Check task T028 has been removed. Proceed with implementations following standard code-review and CI policies; maintainers must still verify metadata, accessibility checks and tests before merging changes that affect `lisp/`.
 
-- [ ] T029 Create checklist: `specs/002-community-package-management/checklists/package-requires-validation.md` (esqueleto e itens executáveis para validar `Package-Requires`).
-- [ ] T030 Create checklist: `specs/002-community-package-management/checklists/init-audit.md` (esqueleto e itens executáveis para auditar `init-*.el` e prevenir migração automática).
+- [x] T029 Create checklist: `specs/002-community-package-management/checklists/package-requires-validation.md` (esqueleto e itens executáveis para validar `Package-Requires`).
+- [x] T030 Create checklist: `specs/002-community-package-management/checklists/init-audit.md` (esqueleto e itens executáveis para auditar `init-*.el` e prevenir migração automática).
 
 - [ ] T032 Confirm monorepo repository: criar/confirmar `A11yDevs/emacs-a11y-setup` com árvore `lisp/` e registrar URL canônica (ex.: https://github.com/A11yDevs/emacs-a11y-setup/tree/main/lisp). Incluir evidência em `specs/002-community-package-management/`.
 - [x] T033 Create hello-world package (artifact): adicionar `specs/002-community-package-management/artifacts/a11y-hello/` com `a11y-hello.el` e `README.md` como pacote de teste para instalação via `package-vc-install` e testes automatizados. (IMPLEMENTED: artefato armazenado em `artifacts/`.)
