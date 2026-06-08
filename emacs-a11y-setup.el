@@ -15,6 +15,7 @@
 (require 'emacs-a11y-setup-profiles)
 (require 'emacs-a11y-setup-modules)
 (require 'emacs-a11y-setup-doctor)
+(require 'emacs-a11y-setup-community-packages)
 
 (defvar emacs-a11y-setup-version "0.1.0"
   "Versao do pacote emacs-a11y-setup.")

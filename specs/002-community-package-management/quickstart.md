@@ -193,11 +193,12 @@ Logs estarão em `/tmp/eaacs-ws/.eaacs-logs/`.
 Para uso interativo no Emacs, os comandos abaixo solicitam confirmação
 (`y-or-n-p`) em ações destrutivas (remove, deactivate, update):
 
-- `M-x emacs-a11y-setup-community-packages-list`
-- `M-x emacs-a11y-setup-community-packages-install`
-- `M-x emacs-a11y-setup-community-packages-activate`
-- `M-x emacs-a11y-setup-community-packages-deactivate`
-- `M-x emacs-a11y-setup-community-packages-remove`
-- `M-x emacs-a11y-setup-community-packages-update`
+- `M-x emacs-a11y-packages-list`
+- `M-x emacs-a11y-packages-install`
+- `M-x emacs-a11y-packages-activate`
+- `M-x emacs-a11y-packages-deactivate`
+- `M-x emacs-a11y-packages-remove`
+- `M-x emacs-a11y-packages-update`
+- `M-x emacs-a11y-packages-dashboard`
 
 Para chamada programática em batch, passe `batch=t` para pular confirmações.
