@@ -272,7 +272,6 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 
 12. Revisão de conformidade:
    * Em cada /speckit.plan e /speckit.tasks, o Constitution Check MUST ser revisado.
-   * Não conformidades MUST bloquear implementação até mitigação ou exceção aprovada.
    * Toda mudança que afete fluxo de instalação MUST atualizar documentação e testes de diagnóstico.
    * Novos comandos destrutivos ou potencialmente destrutivos MUST exigir confirmação explícita.
    * Novas dependências externas MUST justificar necessidade, licença, manutenção e impacto de acessibilidade.
