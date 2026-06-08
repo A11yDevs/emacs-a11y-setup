@@ -1,0 +1,10 @@
+Init Audit Summary
+
+No files matching pattern "init-*.el" were found in the repository root or subdirectories.
+Therefore no init-specific audit findings were generated.
+
+If you expect user init files to be present, run this command from the repo root:
+
+  find . -type f -name 'init-*.el'
+
+Run performed by the agent on 2026-06-07.
