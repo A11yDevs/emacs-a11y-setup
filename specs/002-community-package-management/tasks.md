@@ -101,8 +101,8 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 ### Implementation for User Story 2
 
 - [x] T015 Implementar em lisp/emacs-a11y-setup-community-packages.el a normalização de resultados batch e o mapeamento de exit codes definido em specs/002-community-package-management/contracts/public-commands.md.
-- [ ] T016 Implementar em lisp/emacs-a11y-setup-community-packages.el os wrappers interativos com prompts de confirmação para ações destrutivas, sem alterar o caminho batch.
-- [ ] T017 Implementar em lisp/emacs-a11y-setup-community-packages.el o suporte a workspace-path explícito para batch e testes, garantindo que todos os wrappers chamem o mesmo engine.
+- [x] T016 Implementar em lisp/emacs-a11y-setup-community-packages.el os wrappers interativos com prompts de confirmação para ações destrutivas, sem alterar o caminho batch.
+- [x] T017 Implementar em lisp/emacs-a11y-setup-community-packages.el o suporte a workspace-path explícito para batch e testes, garantindo que todos os wrappers chamem o mesmo engine.
 
 **Checkpoint**: O recurso se comporta de forma equivalente em batch e interativo, com confirmação segura apenas quando necessário.
 

@@ -66,6 +66,167 @@ Each entry: (NAME . plist), where NAME is a string.")
                 name)))
           eaacs--registry))
 
+(defun eaacs--make-envelope (command ok &rest props)
+  "Return result envelope for COMMAND with boolean OK and PROPS.
+Sanitizes `:message' to a single-line, trimmed string."  
+  (let* ((raw-msg (or (plist-get props :message) ""))
+         (msg (if (stringp raw-msg)
+                  (replace-regexp-in-string "[\n\r]+" " " (string-trim raw-msg))
+                (format "%s" raw-msg)))
+         (warnings (or (plist-get props :warnings) '()))
+         (errors (or (plist-get props :errors) '()))
+         (changed (plist-get props :changed)))
+    (list :ok (if ok t nil)
+          :command command
+          :package-id (plist-get props :package-id)
+          :state-before (plist-get props :state-before)
+          :state-after (plist-get props :state-after)
+          :changed (if (or (eq changed t) (eq changed nil)) changed (if changed t nil))
+          :message (or msg "")
+          :warnings warnings
+          :errors errors
+          :next-action (plist-get props :next-action)
+          :log-path (plist-get props :log-path))))
+
+(defun eaacs--envelope->exit-code (env)
+  "Map ENVELOPE to batch exit code. 0=ok, 1=fail."
+  (if (plist-get env :ok) 0 1))
+
+(defun eaacs--format-batch-result (env)
+  "Format ENVELOPE for batch/script consumption.
+Returns a cons cell (EXIT-CODE . FORMATTED-STRING) where FORMATTED-STRING
+is a human-readable line suitable for stdout and EXIT-CODE is 0 (ok) or 1 (fail)."
+  (let ((exit-code (eaacs--envelope->exit-code env))
+        (cmd (or (plist-get env :command) "?"))
+        (msg (or (plist-get env :message) ""))
+        (pkg (plist-get env :package-id))
+        (errs (plist-get env :errors))
+        (warns (plist-get env :warnings))
+        (next (plist-get env :next-action))
+        (parts '()))
+    (push (format "[%s] %s" (if (plist-get env :ok) "OK" "FAIL") cmd) parts)
+    (when pkg (push (format "package=%s" pkg) parts))
+    (push (format "%s" msg) parts)
+    (when errs (push (format "errors=(%s)" (mapconcat #'identity errs "; ")) parts))
+    (when warns (push (format "warnings=(%s)" (mapconcat #'identity warns "; ")) parts))
+    (when next (push (format "next=%s" next) parts))
+    (cons exit-code (mapconcat #'identity (nreverse parts) " | "))))
+
+(defun eaacs--batch-write (env)
+  "Write batch-formatted ENVELOPE to `standard-output` and return exit code.
+Prints one line: the formatted message.  Returns the exit code (0 or 1)
+for use with `kill-emacs' in batch scripts."
+  (pcase-let ((`(,code . ,line) (eaacs--format-batch-result env)))
+    (princ line)
+    (terpri)
+    code))
+
+(defun eaacs-batch-execute (command workspace-path &rest args)
+  "Execute COMMAND with ARGS under WORKSPACE-PATH, print normalized result, return exit code.
+COMMAND is a symbol naming an `eaacs-' function (e.g. 'install, 'remove, 'list).
+ARGS are command-specific arguments passed through to the COMMAND function.
+WORKSPACE-PATH is the directory for registry isolation, or nil for `default-directory'.
+
+Returns the exit code (0 success, 1 failure) for use with `kill-emacs'."
+  (let* ((cmd-fn (intern-soft (format "eaacs-%s" command)))
+         (env (if (fboundp cmd-fn)
+                  (eaacs--with-workspace workspace-path
+                    (apply cmd-fn args))
+                (eaacs--make-envelope (format "%s" command) nil
+                  :message (format "Unknown command: %s" command)
+                  :errors (list (format "unknown-command:%s" command))
+                  :next-action "Check available commands: list, install, remove, activate, deactivate, update"))))
+    (eaacs--batch-write env)))
+
+;; T019: source normalization and trust policy
+(defconst eaacs--default-source-url "https://github.com/A11yDevs/emacs-a11y-setup"
+  "Default source URL when none is provided.")
+
+(defconst eaacs--default-ref "main"
+  "Default git ref when none is provided.")
+
+(defun eaacs--normalize-source-url (source-url)
+  "Normalize SOURCE-URL: strip trailing .git and /."
+    (let* ((raw (or source-url eaacs--default-source-url))
+      (trimmed (replace-regexp-in-string "/\\'" "" raw)))
+    (replace-regexp-in-string "\\.git\\'" "" trimmed)))
+
+(defun eaacs--normalize-ref (ref)
+  "Normalize REF, defaulting to `eaacs--default-ref'."
+  (if (and ref (> (length ref) 0)) ref eaacs--default-ref))
+
+(defun eaacs--source-trusted-p (source-url)
+  "Return non-nil if SOURCE-URL belongs to A11yDevs.
+Accepts URLs with or without trailing .git or trailing slash."
+  (when (stringp source-url)
+    (let ((norm (eaacs--normalize-source-url source-url)))
+      (string-prefix-p "https://github.com/A11yDevs/" norm))))
+
+(defun eaacs-validate-source-policy (source-url ref)
+  "Validate SOURCE-URL and REF under A11yDevs trust policy."
+  (let ((norm-url (eaacs--normalize-source-url source-url))
+        (norm-ref (eaacs--normalize-ref ref)))
+    (if (eaacs--source-trusted-p norm-url)
+        (eaacs--make-envelope "source-policy" t :changed nil
+                              :message (format "Source trusted: %s @ %s" norm-url norm-ref))
+      (eaacs--make-envelope "source-policy" nil :changed nil
+                            :message "Blocked source: not under A11yDevs"
+                            :errors (list (format "untrusted-source:%s" norm-url))
+                            :next-action "Use a repository under https://github.com/A11yDevs/."))))
+
+;; Runtime & failure classification
+(defun eaacs-check-runtime ()
+  "Check runtime prerequisites. Returns envelope with diagnostic."
+  (if (fboundp 'package-vc-install)
+      (eaacs--make-envelope "runtime-check" t :changed nil :message "Runtime OK")
+    (eaacs--make-envelope "runtime-check" nil :changed nil
+                          :message "Missing prerequisite: package-vc-install"
+                          :errors '("runtime:package-vc-install-missing")
+                          :next-action "Upgrade Emacs to 29+ or load package-vc before using community commands.")))
+
+(defun eaacs-classify-failure (command err-text)
+  "Classify ERR-TEXT for COMMAND and return diagnostic envelope."
+  (let* ((txt (downcase (format "%s" err-text)))
+          (kind (cond
+            ((string-match-p "network\\|timed out\\|timeout\\|dns\\|unreachable" txt) "network")
+            ((string-match-p "repository\\|not found\\|404\\|git\\|remote" txt) "repository")
+            ((string-match-p "conflict\\|already exists\\|state" txt) "state-conflict")
+            (t "unknown"))))
+    (eaacs--make-envelope command nil :changed nil
+                          :message (format "Operation failed (%s)." kind)
+                          :errors (list (format "%s:%s" command kind) (format "detail:%s" err-text))
+                          :next-action
+                          (cond
+                           ((string= kind "network") "Check internet connectivity and retry.")
+                           ((string= kind "repository") "Confirm repository URL/ref and access permissions.")
+                           ((string= kind "state-conflict") "Reconcile package state before retrying.")
+                           (t "Inspect logs and retry with verbose diagnostics.")))))
+
+;; Logs
+(defconst eaacs--log-dir ".eaacs-logs"
+  "Subdirectory within workspace for operation logs.")
+
+(defun eaacs--log-path (workspace command name)
+  "Return absolute log file path for COMMAND on package NAME under WORKSPACE."
+  (let ((dir (expand-file-name eaacs--log-dir (or workspace default-directory))))
+    (unless (file-directory-p dir)
+      (make-directory dir t))
+    (expand-file-name (format "%s-%s-%s.log" command name (format-time-string "%Y%m%dT%H%M%S")) dir)))
+
+(defun eaacs--write-log (path env)
+  "Write envelope ENV summary to log file at PATH."
+  (when path
+    (condition-case nil
+        (with-temp-file path
+          (insert (format "command: %s\n" (plist-get env :command)))
+          (insert (format "ok: %s\n" (plist-get env :ok)))
+          (insert (format "package-id: %s\n" (plist-get env :package-id)))
+          (insert (format "message: %s\n" (plist-get env :message)))
+          (insert (format "errors: %s\n" (plist-get env :errors)))
+          (insert (format "next-action: %s\n" (plist-get env :next-action))))
+      (error nil))))
+
+;; Core operations
 (defun eaacs-install-package (name path)
   "Install package NAME from PATH. Returns t on success, nil on failure."
   (let ((full (expand-file-name path default-directory))
@@ -138,173 +299,6 @@ Each entry: (NAME . plist), where NAME is a string.")
             (setcdr entry (plist-put (cdr entry) :activated t)))
           t)))))
 
-(defun eaacs--make-envelope (command ok &rest props)
-  "Return result envelope for COMMAND with boolean OK and PROPS.
-Sanitizes `:message` to a single-line, trimmed string to keep outputs short
-and screen-reader friendly."
-  (let* ((raw-msg (or (plist-get props :message) ""))
-         (msg (if (stringp raw-msg)
-                  (replace-regexp-in-string
-                   "[\n\r]+" " " (string-trim raw-msg))
-                (format "%s" raw-msg)))
-         (warnings (or (plist-get props :warnings) '()))
-         (errors (or (plist-get props :errors) '()))
-         (changed (plist-get props :changed)))
-    (list :ok (if ok t nil)
-          :command command
-          :package-id (plist-get props :package-id)
-          :state-before (plist-get props :state-before)
-          :state-after (plist-get props :state-after)
-          :changed (if (or (eq changed t) (eq changed nil)) changed (if changed t nil))
-          :message (or msg "")
-          :warnings warnings
-          :errors errors
-          :next-action (plist-get props :next-action)
-          :log-path (plist-get props :log-path))))
-
-;; T015: batch result normalization and exit code mapping
-(defun eaacs--envelope->exit-code (env)
-  "Map ENVELOPE to batch exit code. 0=ok, 1=fail."
-  (if (plist-get env :ok) 0 1))
-
-(defun eaacs--format-batch-result (env)
-  "Format ENVELOPE for batch/script consumption.
-Returns a cons cell (EXIT-CODE . FORMATTED-STRING) where FORMATTED-STRING
-is a human-readable line suitable for stdout and EXIT-CODE is 0 (ok) or 1 (fail)."
-  (let ((exit-code (eaacs--envelope->exit-code env))
-        (cmd (or (plist-get env :command) "?"))
-        (msg (or (plist-get env :message) ""))
-        (pkg (plist-get env :package-id))
-        (errs (plist-get env :errors))
-        (warns (plist-get env :warnings))
-        (next (plist-get env :next-action))
-        (parts '()))
-    (push (format "[%s] %s" (if (plist-get env :ok) "OK" "FAIL") cmd) parts)
-    (when pkg (push (format "package=%s" pkg) parts))
-    (push (format "%s" msg) parts)
-    (when errs (push (format "errors=(%s)" (mapconcat #'identity errs "; ")) parts))
-    (when warns (push (format "warnings=(%s)" (mapconcat #'identity warns "; ")) parts))
-    (when next (push (format "next=%s" next) parts))
-    (cons exit-code (mapconcat #'identity (nreverse parts) " | "))))
-
-(defun eaacs--batch-write (env)
-  "Write batch-formatted ENVELOPE to `standard-output` and return exit code.
-Prints one line: the formatted message.  Returns the exit code (0 or 1)
-for use with `kill-emacs' in batch scripts."
-  (pcase-let ((`(,code . ,line) (eaacs--format-batch-result env)))
-    (princ line)
-    (terpri)
-    code))
-
-(defun eaacs-batch-execute (command &rest args)
-  "Execute COMMAND with ARGS in batch mode, print normalized result, return exit code.
-COMMAND is a symbol naming an `eaacs-' function (e.g. 'install, 'remove, 'list).
-ARGS are passed directly to the command function.
-The last element of ARGS may be a workspace-path (string or nil).
-
-Returns the exit code (0 success, 1 failure) for use with `kill-emacs'."
-  (let* ((cmd-fn (intern-soft (format "eaacs-%s" command)))
-         (env (if (fboundp cmd-fn)
-                  (apply cmd-fn args)
-                (eaacs--make-envelope (format "%s" command) nil
-                  :message (format "Unknown command: %s" command)
-                  :errors (list (format "unknown-command:%s" command))
-                  :next-action "Check available commands: list, install, remove, activate, deactivate, update"))))
-    (eaacs--batch-write env)))
-
-;; T019: source normalization and trust policy
-(defconst eaacs--default-source-url "https://github.com/A11yDevs/emacs-a11y-setup"
-  "Default source URL when none is provided.")
-
-(defconst eaacs--default-ref "main"
-  "Default git ref when none is provided.")
-
-(defun eaacs--normalize-source-url (source-url)
-  "Normalize SOURCE-URL: strip trailing .git and /."
-  (let* ((raw (or source-url eaacs--default-source-url))
-         (trimmed (replace-regexp-in-string "/\\'" "" raw)))
-    (replace-regexp-in-string "\\.git\\'" "" trimmed)))
-
-(defun eaacs--normalize-ref (ref)
-  "Normalize REF, defaulting to `eaacs--default-ref'."
-  (if (and ref (> (length ref) 0)) ref eaacs--default-ref))
-
-(defun eaacs--source-trusted-p (source-url)
-  "Return non-nil if SOURCE-URL belongs to A11yDevs."
-  (and (stringp source-url)
-       (string-match-p
-        "\\`https://github\\.com/A11yDevs/[-[:alnum:]_.]+\\'"
-        source-url)))
-
-(defun eaacs-validate-source-policy (source-url ref)
-  "Validate SOURCE-URL and REF under A11yDevs trust policy."
-  (let ((norm-url (eaacs--normalize-source-url source-url))
-        (norm-ref (eaacs--normalize-ref ref)))
-    (if (eaacs--source-trusted-p norm-url)
-        (eaacs--make-envelope "source-policy" t :changed nil
-          :message (format "Source trusted: %s @ %s" norm-url norm-ref))
-      (eaacs--make-envelope "source-policy" nil :changed nil
-        :message "Blocked source: not under A11yDevs"
-        :errors (list (format "untrusted-source:%s" norm-url))
-        :next-action "Use a repository under https://github.com/A11yDevs/."))))
-
-;; T020: failure classification and runtime check
-(defun eaacs-check-runtime ()
-  "Check runtime prerequisites. Returns envelope with diagnostic."
-  (if (fboundp 'package-vc-install)
-      (eaacs--make-envelope "runtime-check" t :changed nil
-        :message "Runtime OK")
-    (eaacs--make-envelope "runtime-check" nil :changed nil
-      :message "Missing prerequisite: package-vc-install"
-      :errors '("runtime:package-vc-install-missing")
-      :next-action "Upgrade Emacs to 29+ or load package-vc before using community commands.")))
-
-(defun eaacs-classify-failure (command err-text)
-  "Classify ERR-TEXT for COMMAND and return diagnostic envelope."
-  (let* ((txt (downcase (format "%s" err-text)))
-         (kind (cond
-                ((string-match-p "network\\|timed out\\|timeout\\|dns\\|unreachable" txt) "network")
-                ((string-match-p "repository\\|not found\\|404\\|git\\|remote" txt) "repository")
-                ((string-match-p "conflict\\|already exists\\|state" txt) "state-conflict")
-                (t "unknown"))))
-    (eaacs--make-envelope command nil :changed nil
-      :message (format "Operation failed (%s)." kind)
-      :errors (list (format "%s:%s" command kind) (format "detail:%s" err-text))
-      :next-action
-      (cond
-       ((string= kind "network") "Check internet connectivity and retry.")
-       ((string= kind "repository") "Confirm repository URL/ref and access permissions.")
-       ((string= kind "state-conflict") "Reconcile package state before retrying.")
-       (t "Inspect logs and retry with verbose diagnostics.")))))
-
-;; T021: log-path support
-(defconst eaacs--log-dir ".eaacs-logs"
-  "Subdirectory within workspace for operation logs.")
-
-(defun eaacs--log-path (workspace command name)
-  "Return absolute log file path for COMMAND on package NAME under WORKSPACE."
-  (let ((dir (expand-file-name eaacs--log-dir (or workspace default-directory))))
-    (unless (file-directory-p dir)
-      (make-directory dir t))
-    (expand-file-name
-     (format "%s-%s-%s.log"
-             command name
-             (format-time-string "%Y%m%dT%H%M%S"))
-     dir)))
-
-(defun eaacs--write-log (path env)
-  "Write envelope ENV summary to log file at PATH."
-  (when path
-    (condition-case nil
-        (with-temp-file path
-          (insert (format "command: %s\n" (plist-get env :command)))
-          (insert (format "ok: %s\n" (plist-get env :ok)))
-          (insert (format "package-id: %s\n" (plist-get env :package-id)))
-          (insert (format "message: %s\n" (plist-get env :message)))
-          (insert (format "errors: %s\n" (plist-get env :errors)))
-          (insert (format "next-action: %s\n" (plist-get env :next-action))))
-      (error nil))))
-
 ;; Public wrappers (with log-path support)
 (defun eaacs-install (name path &optional batch workspace-path source-url ref)
   "Install package NAME from PATH and return envelope."
@@ -326,25 +320,6 @@ Returns the exit code (0 success, 1 failure) for use with `kill-emacs'."
                       :log-path lp
                       :message (if ok (format "Installed %s" name)
                                  (format "Install failed: %s" name)))))
-          (eaacs--write-log lp env)
-          (unless batch (message "%s" (plist-get env :message)))
-          env)))))
-
-(defun eaacs-remove (name &optional batch workspace-path)
-  "Remove package NAME and return envelope."
-  (eaacs--with-workspace workspace-path
-    (let ((before (eaacs-list-packages)))
-      (when (or batch (y-or-n-p (format "Remover pacote %s? " name)))
-        (let* ((ok (eaacs-remove-package name))
-               (lp (eaacs--log-path workspace-path "remove" name))
-               (env (eaacs--make-envelope "remove" ok
-                      :package-id name
-                      :state-before (when before (mapconcat #'identity before ","))
-                      :state-after (when ok (mapconcat #'identity (eaacs-list-packages) ","))
-                      :changed ok
-                      :log-path lp
-                      :message (if ok (format "Removed %s" name)
-                                 (format "Remove failed: %s" name)))))
           (eaacs--write-log lp env)
           (unless batch (message "%s" (plist-get env :message)))
           env)))))
@@ -386,8 +361,28 @@ Returns the exit code (0 success, 1 failure) for use with `kill-emacs'."
         (unless batch (message "%s" (plist-get env :message)))
         env))))
 
+(defun eaacs-remove (name &optional batch workspace-path)
+  "Remove package NAME and return envelope."
+  (eaacs--with-workspace workspace-path
+    (let ((before (eaacs-list-packages)))
+      (when (or batch (y-or-n-p (format "Remover pacote %s? " name)))
+        (let* ((ok (eaacs-remove-package name))
+               (lp (eaacs--log-path workspace-path "remove" name))
+               (env (eaacs--make-envelope "remove" ok
+                      :package-id name
+                      :state-before (when before (mapconcat #'identity before ","))
+                      :state-after (when ok (mapconcat #'identity (eaacs-list-packages) ","))
+                      :changed ok
+                      :log-path lp
+                      :message (if ok (format "Removed %s" name)
+                                 (format "Remove failed: %s" name)))))
+          (eaacs--write-log lp env)
+          (unless batch (message "%s" (plist-get env :message)))
+          env)))))
+
 (defun eaacs-update (name &optional path batch workspace-path source-url ref)
-  "Update package NAME and return envelope."
+  "Update package NAME and return envelope.
+When BATCH is non-nil, skip interactive confirmation."
   (eaacs--with-workspace workspace-path
     (let ((policy (eaacs-validate-source-policy source-url ref)))
       (if (not (plist-get policy :ok))
@@ -395,20 +390,21 @@ Returns the exit code (0 success, 1 failure) for use with `kill-emacs'."
             :message (plist-get policy :message)
             :errors (plist-get policy :errors)
             :next-action (plist-get policy :next-action))
-        (let* ((before (eaacs-list-packages))
-               (ok (eaacs-update-package name path))
-               (lp (eaacs--log-path workspace-path "update" name))
-               (env (eaacs--make-envelope "update" ok
-                      :package-id name
-                      :state-before (when before (mapconcat #'identity before ","))
-                      :state-after (when ok (mapconcat #'identity (eaacs-list-packages) ","))
-                      :changed ok
-                      :log-path lp
-                      :message (if ok (format "Updated %s" name)
-                                 (format "Update failed: %s" name)))))
-          (eaacs--write-log lp env)
-          (unless batch (message "%s" (plist-get env :message)))
-          env)))))
+        (when (or batch (y-or-n-p (format "Atualizar pacote %s? " name)))
+          (let* ((before (eaacs-list-packages))
+                 (ok (eaacs-update-package name path))
+                 (lp (eaacs--log-path workspace-path "update" name))
+                 (env (eaacs--make-envelope "update" ok
+                        :package-id name
+                        :state-before (when before (mapconcat #'identity before ","))
+                        :state-after (when ok (mapconcat #'identity (eaacs-list-packages) ","))
+                        :changed ok
+                        :log-path lp
+                        :message (if ok (format "Updated %s" name)
+                                   (format "Update failed: %s" name)))))
+            (eaacs--write-log lp env)
+            (unless batch (message "%s" (plist-get env :message)))
+            env))))))
 
 (defun eaacs-list (&optional workspace-path)
   "Return envelope with known packages."

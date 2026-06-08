@@ -236,15 +236,14 @@
     (should (= (eaacs-batch-execute 'list ws) 0))))
 
 (ert-deftest eaacs-batch-execute-install-test ()
-  "T015: batch-execute para install retorna 0 no sucesso."
+  "T017: batch-execute com workspace-path explícito retorna 0 no sucesso."
   (let ((eaacs--registry nil)
         (ws (expand-file-name "specs/002-community-package-management/artifacts/a11y-hello" default-directory)))
-    (should (= (eaacs-batch-execute 'install "a11y-hello" "a11y-hello.el" t ws) 0))))
+    (should (= (eaacs-batch-execute 'install ws "a11y-hello" "a11y-hello.el" t) 0))))
 
 (ert-deftest eaacs-batch-execute-unknown-command-test ()
   "T015: batch-execute para comando desconhecido retorna 1."
-  (should (= (eaacs-batch-execute 'nonexistent-command) 1)))
-
+  (should (= (eaacs-batch-execute 'nonexistent-command nil) 1)))
 (provide 'emacs-a11y-setup-community-packages-tests)
 
 ;;; emacs-a11y-setup-community-packages-tests.el ends here
