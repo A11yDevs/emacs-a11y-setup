@@ -1,3 +1,26 @@
+# Package-Requires metadata validation checklist
+
+Purpose: validar que cada pacote no monorepo declara `Package-Requires` compatível com o sistema de pacotes do Emacs.
+
+Evidence path: `specs/002-community-package-management/artifacts/package-requires/`
+
+Automated helper: use `scripts/validate-metadata.sh` (instalado no repositório) or run the following emacs-lisp scanner.
+
+Steps:
+
+- [ ] Run the repository metadata validator (if available):
+  - Command: `chmod +x scripts/validate-metadata.sh && ./scripts/validate-metadata.sh specs/002-community-package-management/artifacts/package-requires`.
+  - Output: `specs/002-community-package-management/artifacts/package-requires/report.json` and `report.txt`.
+- [ ] Verify each `lisp/<package>/*.el` containing `Package-Requires` has valid syntax and version tuples `(pkg "MAJOR.MINOR")` where applicable.
+- [ ] For any package missing `Package-Requires`, record filename and reason in `missing-package-requires.txt`.
+- [ ] Check `provide` and final `;;; <file> ends here` footer are present for each package file; record violations in `provide-missing.txt`.
+- [ ] Confirm that `Package-Requires` versions do not reference non-standard package names without justification; record exceptions with issue links.
+- [ ] For each violation, create a tracking issue and reference it in `specs/002-community-package-management/artifacts/package-requires/ISSUES.md` with remediation steps.
+
+Notes:
+
+- Prefer automated validation (`scripts/validate-metadata.sh`) to manual checks. If the script is updated, include its version/hash in the report.
+- Use CI to fail on critical metadata errors; for minor issues prefer blocking PRs until fixed.
 # Checklist: Validação de `Package-Requires`
 
 Objetivo: validar `Package-Requires` em todos os arquivos de `lisp/` e gerar um artefato JSON com as dependências coletadas para auditoria.

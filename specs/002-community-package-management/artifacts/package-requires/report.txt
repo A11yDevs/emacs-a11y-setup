@@ -1,0 +1,8 @@
+Package-Requires Validation Report
+
+Validated packages under /lisp:
+- a11y-hello: Metadata validation passed
+
+No other packages were found under /lisp to validate in this run.
+
+Run command used: scripts/validate-metadata.sh specs/002-community-package-management/artifacts/package-requires
