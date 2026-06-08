@@ -35,10 +35,10 @@ Generated tasks: T001..T034
 
 Purpose: Project initialization and basic structure for feature implementation.
 
-- [ ] T001 Create feature checklist directory and README: `specs/002-community-package-management/checklists/README.md` (esqueleto de checklists e instruções de uso).
-- [ ] T002 [P] Create tests directory and placeholder: `specs/002-community-package-management/tests/placeholder.md` (base para testes ERT e documentação de cenários).
-- [ ] T003 [P] Ensure artifacts directory exists and include hello-world artifact: `specs/002-community-package-management/artifacts/a11y-hello/` (verificar presença de `a11y-hello.el` e `README.md`).
-- [ ] T004 Create contracts README: `specs/002-community-package-management/contracts/README.md` (explicar schema, uso e localização de `public-commands` contract files).
+- [x] T001 Create feature checklist directory and README: `specs/002-community-package-management/checklists/README.md` (esqueleto de checklists e instruções de uso).
+- [x] T002 [P] Create tests directory and placeholder: `specs/002-community-package-management/tests/placeholder.md` (base para testes ERT e documentação de cenários).
+- [x] T003 [P] Ensure artifacts directory exists and include hello-world artifact: `specs/002-community-package-management/artifacts/a11y-hello/` (verificar presença de `a11y-hello.el` e `README.md`).
+- [x] T004 Create contracts README: `specs/002-community-package-management/contracts/README.md` (explicar schema, uso e localização de `public-commands` contract files).
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
@@ -51,10 +51,10 @@ Purpose: Core validations and safeguards that MUST be completed before user stor
 
 The Constitution Check task T028 has been removed. Proceed with implementations following standard code-review and CI policies; maintainers must still verify metadata, accessibility checks and tests before merging changes that affect `lisp/`.
 
-- [ ] T029 Create checklist: `specs/002-community-package-management/checklists/package-requires-validation.md` (esqueleto e itens executáveis para validar `Package-Requires`).
-- [ ] T030 Create checklist: `specs/002-community-package-management/checklists/init-audit.md` (esqueleto e itens executáveis para auditar `init-*.el` e prevenir migração automática).
+- [x] T029 Create checklist: `specs/002-community-package-management/checklists/package-requires-validation.md` (esqueleto e itens executáveis para validar `Package-Requires`).
+- [x] T030 Create checklist: `specs/002-community-package-management/checklists/init-audit.md` (esqueleto e itens executáveis para auditar `init-*.el` e prevenir migração automática).
 
-- [ ] T032 Confirm monorepo repository: criar/confirmar `A11yDevs/emacs-a11y-setup` com árvore `lisp/` e registrar URL canônica (ex.: https://github.com/A11yDevs/emacs-a11y-setup/tree/main/lisp). Incluir evidência em `specs/002-community-package-management/`.
+- [x] T032 Confirm monorepo repository: criar/confirmar `A11yDevs/emacs-a11y-setup` com árvore `lisp/` e registrar URL canônica (ex.: https://github.com/A11yDevs/emacs-a11y-setup/tree/main/lisp). Incluir evidência em `specs/002-community-package-management/`.
 - [x] T033 Create hello-world package (artifact): adicionar `specs/002-community-package-management/artifacts/a11y-hello/` com `a11y-hello.el` e `README.md` como pacote de teste para instalação via `package-vc-install` e testes automatizados. (IMPLEMENTED: artefato armazenado em `artifacts/`.)
   NOTE: O artefato de teste foi criado em `specs/002-community-package-management/artifacts/a11y-hello/` como referência para verificação e testes automatizados.
 - [x] T034 Promote hello-world to lisp/: opcional/manual — `a11y-hello` promovido para `lisp/a11y-hello/` (cópia criada a partir de `specs/002-community-package-management/artifacts/`). Promoção deve ocorrer via PR manual quando aplicável; artefato original permanece em `specs/.../artifacts/` como referência.
@@ -92,11 +92,11 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 
 ### Tests for User Story 2
 
-- [ ] T014 Adicionar cobertura ERT em test/emacs-a11y-setup-community-packages-tests.el para parity interativo/batch, mapeamento de exit code e gating de confirmação.
+- [x] T014 Adicionar cobertura ERT em test/emacs-a11y-setup-community-packages-tests.el para parity interativo/batch, mapeamento de exit code e gating de confirmação.
 
 ### Implementation for User Story 2
 
-- [ ] T031 [US2/FR-003] Implementar e validar o pacote agregador `a11y-emacs` em `lisp/a11y-emacs/a11y-emacs.el` e criar `specs/002-community-package-management/tests/install-aggregator.md` (instalação via `package-vc-install`, verificação de módulos base carregados). 
+- [x] T031 [US2/FR-003] Implementar e validar o pacote agregador `a11y-emacs` em `lisp/a11y-emacs/a11y-emacs.el` e criar `specs/002-community-package-management/tests/install-aggregator.md` (instalação via `package-vc-install`, verificação de módulos base carregados). 
 
 ### Implementation for User Story 2
 

@@ -1,3 +1,46 @@
+# Package-Requires Validation Checklist
+
+Objetivo: garantir que todos os pacotes em `lisp/` declarem `Package-Requires`
+adequadamente e que as dependências listadas sejam realistas para o alvo Emacs.
+
+Passos:
+
+1. Enumerar arquivos `lisp/*.el` e identificar cabeçalhos `Package-Requires`:
+
+```bash
+grep -H --line-number "Package-Requires" lisp/*.el || true
+```
+
+2. Para cada arquivo com `Package-Requires`, verificar formato e versão:
+
+- Critérios:
+  - Sintaxe: `Package-Requires: ((pkg "MAJOR.MINOR"))` ou lista similar válida.
+  - Não declarar dependências irreais (ex.: versões maiores que a suportada pelo CI).
+  - Preferir dependências mínimas compatíveis (sem pins de patch quando desnecessário).
+
+3. Automatizar verificação via Emacs Lisp (exemplo):
+
+```elisp
+(require 'finder-inf)
+(dolist (f (directory-files-recursively "lisp" "\\.el$"))
+  (with-temp-buffer
+    (insert-file-contents f)
+    (goto-char (point-min))
+    (when (re-search-forward "^;; Package-Requires: *\((.*)\)" nil t)
+      (let ((deps (match-string 1)))
+        (message "%s => %s" f deps)))))
+```
+
+4. Validar que as dependências listadas existem no repositório ou no MELPA/ELPA,
+   e documentar exceções (ex.: pacotes locais ou forks privados).
+
+5. Atualizar o checklist `specs/002-community-package-management/checklists/README.md`
+   com notas específicas para pacotes que requerem atenção.
+
+Critério de sucesso:
+
+- Todos os arquivos `lisp/*.el` têm `Package-Requires` válidos ou possuem uma
+  justificativa documentada em `checklists/package-requires-validation.md`.
 # Checklist: Package-Requires validation
 
 Objetivo: Validar automaticamente os cabeçalhos Lisp (`;;;`) e a consistência de `Package-Requires` nos pacotes sob `lisp/`.

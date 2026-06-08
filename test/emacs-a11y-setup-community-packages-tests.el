@@ -195,11 +195,11 @@
          (reg2 (expand-file-name ".eaacs-registry.el" ws2)))
     (unwind-protect
         (progn
-          (should (plist-get (emacs-a11y-setup-community-packages-install "a11y-hello" pkg-path ws1) :ok))
+          (should (plist-get (emacs-a11y-setup-community-packages-install "a11y-hello" pkg-path t ws1) :ok))
           (should (file-exists-p reg1))
           (should (not (file-exists-p reg2)))
           ;; install same package in other workspace
-          (should (plist-get (emacs-a11y-setup-community-packages-install "a11y-hello" pkg-path ws2) :ok))
+          (should (plist-get (emacs-a11y-setup-community-packages-install "a11y-hello" pkg-path t ws2) :ok))
           (should (file-exists-p reg2)))
       (when (file-exists-p reg1) (delete-file reg1))
       (when (file-exists-p reg2) (delete-file reg2))
