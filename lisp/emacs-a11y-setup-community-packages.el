@@ -90,6 +90,36 @@ Sanitizes `:message' to a single-line, trimmed string."
   "Map ENVELOPE to batch exit code. 0=ok, 1=fail."
   (if (plist-get env :ok) 0 1))
 
+(defun eaacs--format-batch-result (env)
+  "Normalize ENVELOPE into a batch-friendly plist matching public-commands schema.
+
+Ensures keys exist and types are normalized: boolean `:ok` and `:changed`,
+string `:message` and `:command`, and arrays of strings for `:warnings` and
+`:errors`. Returns a new plist derived from ENv.
+"
+  (let* ((ok (if (plist-get env :ok) t nil))
+         (command (or (plist-get env :command) ""))
+         (message (let ((m (plist-get env :message))) (if (stringp m) m (format "%s" m))))
+         (warnings (mapcar (lambda (w) (format "%s" w)) (or (plist-get env :warnings) '())))
+         (errors (mapcar (lambda (e) (format "%s" e)) (or (plist-get env :errors) '())))
+         (changed (let ((c (plist-get env :changed))) (if (eq c t) t nil)))
+         (pkg-id (plist-get env :package-id))
+         (state-before (plist-get env :state-before))
+         (state-after (plist-get env :state-after))
+         (next-action (plist-get env :next-action))
+         (log-path (plist-get env :log-path)))
+    (list :ok ok
+          :command command
+          :package-id (if (or (null pkg-id) (string= pkg-id "")) nil pkg-id)
+          :state-before (if (or (null state-before) (string= state-before "")) nil state-before)
+          :state-after (if (or (null state-after) (string= state-after "")) nil state-after)
+          :changed (if changed t nil)
+          :message (or message "")
+          :warnings warnings
+          :errors errors
+          :next-action (if (and (stringp next-action) (> (length (string-trim next-action)) 0)) next-action nil)
+          :log-path (if (and (stringp log-path) (> (length (string-trim log-path)) 0)) log-path nil)))
+
 ;; Source normalization / trust policy
 (defconst eaacs--default-source-url "https://github.com/A11yDevs/emacs-a11y-setup"
   "Default source URL when none is provided.")
