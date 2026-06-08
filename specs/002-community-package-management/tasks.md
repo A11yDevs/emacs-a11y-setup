@@ -52,9 +52,9 @@ Purpose: Core validations and safeguards that MUST be completed before user stor
 The Constitution Check task T028 has been removed. Proceed with implementations following standard code-review and CI policies; maintainers must still verify metadata, accessibility checks and tests before merging changes that affect `lisp/`.
 
 - [x] T029 Create checklist: `specs/002-community-package-management/checklists/package-requires-validation.md` (esqueleto e itens executáveis para validar `Package-Requires`).
-- [ ] T030 Create checklist: `specs/002-community-package-management/checklists/init-audit.md` (esqueleto e itens executáveis para auditar `init-*.el` e prevenir migração automática).
+- [x] T030 Create checklist: `specs/002-community-package-management/checklists/init-audit.md` (esqueleto e itens executáveis para auditar `init-*.el` e prevenir migração automática).
 
-- [ ] T032 Confirm monorepo repository: criar/confirmar `A11yDevs/emacs-a11y-setup` com árvore `lisp/` e registrar URL canônica (ex.: https://github.com/A11yDevs/emacs-a11y-setup/tree/main/lisp). Incluir evidência em `specs/002-community-package-management/`.
+- [x] T032 Confirm monorepo repository: criar/confirmar `A11yDevs/emacs-a11y-setup` com árvore `lisp/` e registrar URL canônica (ex.: https://github.com/A11yDevs/emacs-a11y-setup/tree/main/lisp). Incluir evidência em `specs/002-community-package-management/`.
 - [x] T033 Create hello-world package (artifact): adicionar `specs/002-community-package-management/artifacts/a11y-hello/` com `a11y-hello.el` e `README.md` como pacote de teste para instalação via `package-vc-install` e testes automatizados. (IMPLEMENTED: artefato armazenado em `artifacts/`.)
   NOTE: O artefato de teste foi criado em `specs/002-community-package-management/artifacts/a11y-hello/` como referência para verificação e testes automatizados.
 - [x] T034 Promote hello-world to lisp/: opcional/manual — `a11y-hello` promovido para `lisp/a11y-hello/` (cópia criada a partir de `specs/002-community-package-management/artifacts/`). Promoção deve ocorrer via PR manual quando aplicável; artefato original permanece em `specs/.../artifacts/` como referência.
@@ -92,7 +92,7 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 
 ### Tests for User Story 2
 
-- [ ] T014 Adicionar cobertura ERT em test/emacs-a11y-setup-community-packages-tests.el para parity interativo/batch, mapeamento de exit code e gating de confirmação.
+- [x] T014 Adicionar cobertura ERT em test/emacs-a11y-setup-community-packages-tests.el para parity interativo/batch, mapeamento de exit code e gating de confirmação.
 
 ### Implementation for User Story 2
 
