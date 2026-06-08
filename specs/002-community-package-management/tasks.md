@@ -96,11 +96,11 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 
 ### Implementation for User Story 2
 
-- [ ] T031 [US2/FR-003] Implementar e validar o pacote agregador `a11y-emacs` em `lisp/a11y-emacs/a11y-emacs.el` e criar `specs/002-community-package-management/tests/install-aggregator.md` (instalação via `package-vc-install`, verificação de módulos base carregados). 
+- [x] T031 [US2/FR-003] Implementar e validar o pacote agregador `a11y-emacs` em `lisp/a11y-emacs/a11y-emacs.el` e criar `specs/002-community-package-management/tests/install-aggregator.md` (instalação via `package-vc-install`, verificação de módulos base carregados). 
 
 ### Implementation for User Story 2
 
-- [ ] T015 Implementar em lisp/emacs-a11y-setup-community-packages.el a normalização de resultados batch e o mapeamento de exit codes definido em specs/002-community-package-management/contracts/public-commands.md.
+- [x] T015 Implementar em lisp/emacs-a11y-setup-community-packages.el a normalização de resultados batch e o mapeamento de exit codes definido em specs/002-community-package-management/contracts/public-commands.md.
 - [ ] T016 Implementar em lisp/emacs-a11y-setup-community-packages.el os wrappers interativos com prompts de confirmação para ações destrutivas, sem alterar o caminho batch.
 - [ ] T017 Implementar em lisp/emacs-a11y-setup-community-packages.el o suporte a workspace-path explícito para batch e testes, garantindo que todos os wrappers chamem o mesmo engine.
 
