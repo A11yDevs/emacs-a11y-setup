@@ -74,11 +74,11 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 
 ### Implementation for User Story 1
 
-- [ ] T009 Implementar em lisp/emacs-a11y-setup-community-packages.el o comando de listagem com renderização textual acessível e reconciliação com o state registry.
-- [ ] T010 Implementar em lisp/emacs-a11y-setup-community-packages.el os handlers de install, activate, deactivate e remove com transições de estado explícitas e persistência workspace-local.
-- [ ] T011 Implementar em lisp/emacs-a11y-setup-community-packages.el o fluxo de update com resultado por pacote, resumo final e preservação do estado de ativação.
-- [ ] T012 Amarrar em lisp/emacs-a11y-setup-community-packages.el as seis entradas públicas emacs-a11y-setup-community-packages-list/install/activate/deactivate/remove/update ao mesmo engine interno.
-- [ ] T013 Ajustar em lisp/emacs-a11y-setup-community-packages.el as mensagens de sucesso, aviso e erro para manter texto curto, linear e acionável.
+ - [x] T009 Implementar em lisp/emacs-a11y-setup-community-packages.el o comando de listagem com renderização textual acessível e reconciliação com o state registry.
+ - [x] T010 Implementar em lisp/emacs-a11y-setup-community-packages.el os handlers de install, activate, deactivate e remove com transições de estado explícitas e persistência workspace-local.
+ - [x] T011 Implementar em lisp/emacs-a11y-setup-community-packages.el o fluxo de update com resultado por pacote, resumo final e preservação do estado de ativação.
+ - [x] T012 Amarrar em lisp/emacs-a11y-setup-community-packages.el as seis entradas públicas emacs-a11y-setup-community-packages-list/install/activate/deactivate/remove/update ao mesmo engine interno.
+ - [x] T013 Ajustar em lisp/emacs-a11y-setup-community-packages.el as mensagens de sucesso, aviso e erro para manter texto curto, linear e acionável.
 
 **Checkpoint**: A jornada básica de gerenciamento comunitário fica funcional e pode ser validada sozinha como MVP.
 
