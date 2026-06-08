@@ -116,13 +116,13 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 
 ### Tests for User Story 3
 
-- [ ] T018 Adicionar cobertura ERT em test/emacs-a11y-setup-community-packages-tests.el para rejeição de origem não confiável, falhas de rede/repositório e diagnóstico do pré-requisito da base core mínima quando aplicável.
+- [x] T018 Adicionar cobertura ERT em test/emacs-a11y-setup-community-packages-tests.el para rejeição de origem não confiável, falhas de rede/repositório e diagnóstico do pré-requisito da base core mínima quando aplicável.
 
 ### Implementation for User Story 3
 
-- [ ] T019 Implementar em lisp/emacs-a11y-setup-community-packages.el a validação de origem A11yDevs e a normalização de source_url/ref antes de qualquer mutação.
-- [ ] T020 Implementar em lisp/emacs-a11y-setup-community-packages.el a classificação de falhas de rede, repositório, estado conflituoso e runtime sem package-vc, com next-action claro.
-- [ ] T021 Implementar em lisp/emacs-a11y-setup-community-packages.el o registro de logs e o preenchimento de log-path por operação, mantendo todas as escritas dentro do workspace isolado.
+- [x] T019 Implementar em lisp/emacs-a11y-setup-community-packages.el a validação de origem A11yDevs e a normalização de source_url/ref antes de qualquer mutação.
+- [x] T020 Implementar em lisp/emacs-a11y-setup-community-packages.el a classificação de falhas de rede, repositório, estado conflituoso e runtime sem package-vc, com next-action claro.
+- [x] T021 Implementar em lisp/emacs-a11y-setup-community-packages.el o registro de logs e o preenchimento de log-path por operação, mantendo todas as escritas dentro do workspace isolado.
 
 **Checkpoint**: As mutações ficam protegidas por política de confiança e falhas passam a produzir diagnóstico acessível e recuperável.
 
@@ -132,12 +132,12 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 
 **Purpose**: Fechar documentação, regressões e validação final sem alterar o desenho funcional já aprovado.
 
-- [ ] T022 Atualizar specs/002-community-package-management/quickstart.md com os comandos finais de validação batch e os resultados esperados da feature implementada.
-- [ ] T023 [P] Atualizar README.md e docs/README.md com a superfície pública dos comandos, o modelo de estado workspace-local e a política de confiança A11yDevs.
-- [ ] T024 [P] Adicionar regressões finais em test/emacs-a11y-setup-community-packages-tests.el para update parcial, no-op idempotente e lista vazia.
-- [ ] T025 Executar a suíte batch descrita em specs/002-community-package-management/quickstart.md e corrigir eventuais falhas em lisp/emacs-a11y-setup-community-packages.el ou test/emacs-a11y-setup-community-packages-tests.el.
-- [ ] T026 Validar a consistência entre specs/002-community-package-management/contracts/public-commands.schema.json e a envelope implementada, ajustando specs/002-community-package-management/contracts/public-commands.md apenas se a redação precisar de refinamento.
-- [ ] T027 Revisar a redação das mensagens e remover código morto em lisp/emacs-a11y-setup-community-packages.el para manter saídas curtas, lineares e amigáveis a leitor de tela.
+- [x] T022 Atualizar specs/002-community-package-management/quickstart.md com os comandos finais de validação batch e os resultados esperados da feature implementada.
+- [x] T023 [P] Atualizar README.md e docs/README.md com a superfície pública dos comandos, o modelo de estado workspace-local e a política de confiança A11yDevs.
+- [x] T024 [P] Adicionar regressões finais em test/emacs-a11y-setup-community-packages-tests.el para update parcial, no-op idempotente e lista vazia.
+- [x] T025 Executar a suíte batch descrita em specs/002-community-package-management/quickstart.md e corrigir eventuais falhas em lisp/emacs-a11y-setup-community-packages.el ou test/emacs-a11y-setup-community-packages-tests.el.
+- [x] T026 Validar a consistência entre specs/002-community-package-management/contracts/public-commands.schema.json e a envelope implementada, ajustando specs/002-community-package-management/contracts/public-commands.md apenas se a redação precisar de refinamento.
+- [x] T027 Revisar a redação das mensagens e remover código morto em lisp/emacs-a11y-setup-community-packages.el para manter saídas curtas, lineares e amigáveis a leitor de tela.
 
 ---
 

@@ -2,9 +2,31 @@
 
 ## Scope
 
-Este contrato define as convencoes tecnicas para organizar e validar pacotes Emacs Lisp instalaveis diretamente do monorepo `A11yDevs/emacs-a11y-setup` via `package-vc-install`.
+Este contrato define as convenções técnicas e o envelope de retorno padronizado
+para os comandos públicos de gerenciamento de pacotes comunitários A11yDevs,
+implementados em `lisp/emacs-a11y-setup-community-packages.el`.
 
-Nao define implementacao de codigo nesta etapa; define apenas padroes verificaveis para a fase de implementacao.
+## Envelope Contract
+
+Todo comando público retorna um envelope plist compatível com
+`public-commands.schema.json`:
+
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| `:ok` | boolean | sim | Sucesso da operação |
+| `:command` | string | sim | Nome do comando |
+| `:package-id` | string ou nil | não | Identificador do pacote |
+| `:state-before` | string ou nil | não | Estado antes da operação |
+| `:state-after` | string ou nil | não | Estado depois da operação |
+| `:changed` | boolean | sim | Se houve mutação |
+| `:message` | string | sim | Mensagem descritiva (linha única) |
+| `:warnings` | string[] | sim | Lista de avisos |
+| `:errors` | string[] | sim | Lista de erros |
+| `:next-action` | string ou nil | não | Próxima ação sugerida |
+| `:log-path` | string ou nil | não | Caminho do arquivo de log |
+
+Para uso em batch, `eaacs-batch-execute` imprime uma linha formatada e retorna
+código de saída 0 (sucesso) ou 1 (falha).
 
 ## Repository and Layout Contract
 
