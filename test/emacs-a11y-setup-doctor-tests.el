@@ -9,12 +9,10 @@
     "docs/use-case-global.puml"
     "docs/use-cases.md"
     "docs/handoff-contract.md"
-    "docs/migration-from-emacs-a11y.md"
     "docs/sequence/first-run-workspace.puml"
     "docs/sequence/bootstrap-handoff.puml"
     "docs/sequence/internal-doctor.puml"
-    "docs/sequence/module-loading.puml"
-    "docs/sequence/module-migration-inventory.puml"))
+    "docs/sequence/module-loading.puml"))
 
 (ert-deftest emacs-a11y-setup-doctor-generates-text-report ()
   (let* ((tmp (make-temp-file "a11y-doctor-" t)))
@@ -65,8 +63,7 @@
                       "docs/sequence/first-run-workspace.puml"
                       "docs/sequence/bootstrap-handoff.puml"
                       "docs/sequence/internal-doctor.puml"
-                      "docs/sequence/module-loading.puml"
-                      "docs/sequence/module-migration-inventory.puml"))
+                      "docs/sequence/module-loading.puml"))
     (with-temp-buffer
       (insert-file-contents artifact)
       (let ((content (buffer-string)))

@@ -5,9 +5,12 @@
 (require 'subr-x)
 
 (defun emacs-a11y-setup--test-load-migration-doc ()
-  (with-temp-buffer
-    (insert-file-contents "docs/migration-from-emacs-a11y.md")
-    (buffer-string)))
+  (let ((path "docs/migration-from-emacs-a11y.md"))
+    (unless (file-exists-p path)
+      (ert-skip "migration document removed; test skipped"))
+    (with-temp-buffer
+      (insert-file-contents path)
+      (buffer-string))))
 
 (ert-deftest emacs-a11y-setup-modules-inventory-has-13-items ()
   (let* ((content (emacs-a11y-setup--test-load-migration-doc))

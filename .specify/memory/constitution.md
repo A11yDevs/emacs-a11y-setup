@@ -198,10 +198,10 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 * O emacs-a11y-installer MUST NOT assumir a estrutura interna do workspace do emacs-a11y-setup.
 * O repositório de distribuição MUST NOT duplicar lógica interna do emacs-a11y-setup quando puder consumir interfaces públicas.
 * O repositório de distribuição MUST NOT duplicar lógica de bootstrap do emacs-a11y-installer quando puder consumir o componente oficial.
-* Módulos Emacs Lisp existentes em repositórios de distribuição ou empacotamento SHOULD ser migrados gradualmente para o repositório emacs-a11y-setup quando representarem lógica interna do Emacs.
+* Módulos Emacs Lisp existentes em repositórios de distribuição ou empacotamento MAY ser avaliados para migração futura para o repositório emacs-a11y-setup quando representarem lógica interna do Emacs; tal migração não é obrigatória para esta feature.
 * Launchers e scripts específicos de sistema operacional MAY permanecer em repositórios de distribuição ou bootstrap, pois pertencem à camada de integração com o sistema operacional.
-* Durante a migração, compatibilidade e documentação devem ser preservadas.
-* Migrações MUST evitar que usuários percam configurações ou tenham fluxos existentes quebrados sem aviso, migração ou fallback.
+* Se ocorrer migração, compatibilidade e documentação devem ser preservadas.
+* Se migrações forem realizadas, elas MUST evitar que usuários percam configurações ou tenham fluxos existentes quebrados sem aviso, migração ou fallback.
 
 ## Critérios de qualidade da constituição
 

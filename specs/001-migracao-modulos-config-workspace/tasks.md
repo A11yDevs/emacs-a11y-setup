@@ -98,27 +98,7 @@
 
 ---
 
-## Phase 5: User Story 3 - Migração gradual de módulos legados (Priority: P1)
-
-**Goal**: Inventariar módulos legados e definir estratégia rastreável de migração incremental.
-
-**Independent Test**: Validar inventário completo dos 13 módulos legados com decisão, justificativa, dependências e riscos por item.
-
-### Tests for User Story 3
-
-- [X] T041 [P] [US3] Adicionar teste de consistência do inventário (13 módulos obrigatórios) em `test/emacs-a11y-setup-modules-tests.el`
-- [X] T042 [P] [US3] Adicionar teste de classificação permitida (`migrar|adaptar|adiar|descartar`) em `test/emacs-a11y-setup-modules-tests.el`
-
-### Implementation for User Story 3
-
-- [X] T043 [US3] Criar inventário inicial dos 13 módulos legados em `docs/migration-from-emacs-a11y.md`
-- [X] T044 [US3] Registrar origem histórica e domínio funcional de cada módulo legado em `docs/migration-from-emacs-a11y.md`
-- [X] T045 [US3] Registrar decisão, justificativa, dependências externas, riscos e status por módulo em `docs/migration-from-emacs-a11y.md`
-- [X] T046 [US3] Mapear módulo novo correspondente quando houver em `docs/migration-from-emacs-a11y.md`
-- [X] T047 [US3] Atualizar modelo de dados de inventário de migração em `specs/001-migracao-modulos-config-workspace/data-model.md`
-- [X] T048 [US3] Atualizar decisões de migração incremental e fora de escopo em `specs/001-migracao-modulos-config-workspace/research.md`
-
-**Checkpoint**: estratégia de migração incremental documentada e validável.
+<!-- Phase 5 (User Story 3 - legacy module migration) removed: migration of legacy modules is out of scope. -->
 
 ---
 
@@ -195,7 +175,7 @@
 - [X] T076 [US6] Criar sequência de handoff com bootstrap externo em `docs/sequence/bootstrap-handoff.puml`
 - [X] T077 [US6] Criar sequência de diagnóstico interno em `docs/sequence/internal-doctor.puml`
 - [X] T078 [US6] Criar sequência de carregamento resiliente de módulos em `docs/sequence/module-loading.puml`
-- [X] T079 [US6] Criar sequência de inventário/classificação de migração em `docs/sequence/module-migration-inventory.puml`
+- [X] T079 [US6] Criar sequência de inventário/classificação de migração (histórico) em `docs/sequence/module-migration-inventory.puml`
 
 **Checkpoint**: integração documental pronta para consumo por distribuição externa.
 
@@ -281,7 +261,7 @@ Task: "T024 Implementar geração de init/custom/early-init em lisp/emacs-a11y-s
 1. Setup + Foundational.
 2. US1 (workspace) + validação.
 3. US2 (handoff) + validação.
-4. US3 (migração legada) + validação.
+4. US3 (migração legada) - REMOVIDA do fluxo incremental (fora de escopo).
 5. US5 (perfis/módulos) + validação.
 6. US4 (doctor/reporting) + validação.
 7. US6 (documentação de engenharia) + validação.

@@ -6,7 +6,7 @@
 
 ## Summary
 
-Implementar o esqueleto técnico do pacote Emacs Lisp `emacs-a11y-setup` para primeiro uso com workspace isolado, handoff versionado e de baixo acoplamento com bootstrap externo, perfil padrão conservador, carregamento modular resiliente e diagnóstico interno com relatórios textuais acessíveis. A entrega será incremental: estrutura base do pacote, workspace e isolamento, contrato de handoff, perfis/módulos, doctor/reporting, documentação de projeto de software em PlantUML/Markdown na pasta `docs/`, documentação de migração legada e suíte ERT em batch.
+Implementar o esqueleto técnico do pacote Emacs Lisp `emacs-a11y-setup` para primeiro uso com workspace isolado, handoff versionado e de baixo acoplamento com bootstrap externo, perfil padrão conservador, carregamento modular resiliente e diagnóstico interno com relatórios textuais acessíveis. A entrega será incremental: estrutura base do pacote, workspace e isolamento, contrato de handoff, perfis/módulos, doctor/reporting, documentação de projeto de software em PlantUML/Markdown na pasta `docs/` e suíte ERT em batch.
 
 ## Technical Context
 
@@ -28,7 +28,7 @@ Implementar o esqueleto técnico do pacote Emacs Lisp `emacs-a11y-setup` para pr
 
 **Out of Scope (reinforced)**: sem geração de PDF, sem documentação gráfica proprietária, sem implementação do installer, sem criação de launchers, sem empacotamento Debian final e sem publicação MELPA/ELPA nesta feature
 
-**Scale/Scope**: primeira feature do repositório; núcleo mínimo para perfil conservador, inventário inicial de 13 módulos legados e base de evolução para próximas fases
+**Scale/Scope**: primeira feature do repositório; núcleo mínimo para perfil conservador e base de evolução para próximas fases
 
 ## Constitution Check
 
@@ -65,7 +65,6 @@ Implementar o esqueleto técnico do pacote Emacs Lisp `emacs-a11y-setup` para pr
 - Governance gate: The plan MUST map required docs, linked issues, and PR compliance
   checklist updates.
 
-### Gate Evaluation (Pre-Design)
 
 - Accessibility gate: PASS - comandos e relatórios serão textuais, acionáveis e legíveis por leitor de tela.
 - Emacs/Emacspeak gate: PASS - Emacs Lisp como interface primária; presença/ausência de Emacspeak verificada no doctor.
@@ -79,7 +78,7 @@ Implementar o esqueleto técnico do pacote Emacs Lisp `emacs-a11y-setup` para pr
 - Bootstrap validation gate: PASS - lado setup coberto diretamente; lado installer coberto por contrato/documentação e testes de integração de handoff simulado.
 - Modularity gate: PASS - módulos por domínio com obrigatório/opcional e fallback resiliente.
 - Quality gate: PASS - idempotência de workspace, mensagens claras e suíte ERT definida.
-- Governance gate: PASS - documentação obrigatória incluída (`docs/handoff-contract.md`, `docs/migration-from-emacs-a11y.md`, artefatos de spec/plan).
+ - Governance gate: PASS - documentação obrigatória incluída (`docs/handoff-contract.md`, artefatos de spec/plan).
 
 ## Project Structure
 
@@ -112,13 +111,13 @@ docs/
 ├── use-case-global.puml
 ├── use-cases.md
 ├── handoff-contract.md
-├── migration-from-emacs-a11y.md
+<!-- migration-from-emacs-a11y.md removed: migration of legacy modules is out of scope -->
 └── sequence/
   ├── first-run-workspace.puml
   ├── bootstrap-handoff.puml
   ├── internal-doctor.puml
   ├── module-loading.puml
-  └── module-migration-inventory.puml
+  <!-- module-migration-inventory.puml removed: migration flow diagrams not required -->
 test/
 ├── emacs-a11y-setup-workspace-tests.el
 ├── emacs-a11y-setup-handoff-tests.el
@@ -133,7 +132,7 @@ test/
 
 ### Phase 0 - Research & Architecture Baseline
 
-**Objective**: Fechar decisões técnicas de workspace, handoff, perfis e estratégia de migração incremental.
+**Objective**: Fechar decisões técnicas de workspace, handoff e perfis.
 
 **Affected artifacts**: `specs/001-migracao-modulos-config-workspace/research.md`
 
@@ -262,27 +261,7 @@ test/
 - Funções públicas `emacs-a11y-setup-doctor` e `emacs-a11y-setup-doctor-batch` implementadas.
 - Relatório acessível e acionável gerado em `reports/`.
 
-### Phase 5 - Legacy Module Migration Documentation
-
-**Objective**: Produzir inventário inicial e plano de migração gradual dos módulos legados do repositório histórico.
-
-**Affected files**:
-- `docs/migration-from-emacs-a11y.md`
-- `specs/001-migracao-modulos-config-workspace/data-model.md`
-
-**Key decisions**:
-- Inventariar 13 módulos legados do `init.el` histórico.
-- Registrar decisão por item: migrar, adaptar, adiar ou descartar.
-
-**Tests**:
-- Revisão de consistência documental com spec/plan/contrato.
-
-**Risks**:
-- Migração prematura de módulos avançados fora de escopo.
-
-**Exit criteria**:
-- Inventário completo com status e justificativa por módulo.
-- Dependências externas e riscos explícitos por item.
+<!-- Phase 5 removed: legacy module migration is out of scope for this feature. -->
 
 ### Phase 6 - Software Project Documentation in PlantUML
 
@@ -296,12 +275,11 @@ test/
 - `docs/sequence/bootstrap-handoff.puml`
 - `docs/sequence/internal-doctor.puml`
 - `docs/sequence/module-loading.puml`
-- `docs/sequence/module-migration-inventory.puml`
 
 **Key decisions**:
 - Caso de uso global delimita claramente escopo interno do setup e fronteira com installer/distribuição.
 - Casos de uso textuais cobrem user stories P1 e P2 com objetivo, atores, pré-condições, fluxo principal, alternativos, pós-condições, regras, critérios de aceite e FR relacionados.
-- Diagramas de sequência cobrem fluxos críticos: primeiro uso, handoff, doctor, carregamento resiliente e inventário de migração.
+- Diagramas de sequência cobrem fluxos críticos: primeiro uso, handoff, doctor e carregamento resiliente.
 
 **Tests**:
 - Validação sintática de todos os arquivos PlantUML.

@@ -62,18 +62,7 @@
   - falha em módulo obrigatório impacta status geral do doctor.
   - falha em módulo opcional gera aviso sem bloquear doctor.
 
-## Entidade: MigrationInventoryItem
-- Descrição: item de inventário de módulo legado do repositório `emacs-a11y`.
-- Campos:
-  - `legacy_module` (string)
-  - `legacy_origin_path` (string)
-  - `functional_domain` (string)
-  - `decision` (enum: `migrar`, `adaptar`, `adiar`, `descartar`)
-  - `justification` (string)
-  - `external_dependencies` (lista)
-  - `risks` (lista)
-  - `status` (enum: `pendente`, `em-progresso`, `concluido`)
-  - `new_module` (string opcional)
+<!-- MigrationInventoryItem removed: migration of legacy modules is out of scope for this feature. -->
 
 ## Entidade: DoctorReport
 - Descrição: relatório textual acessível produzido por `doctor`.

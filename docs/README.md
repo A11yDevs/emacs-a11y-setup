@@ -7,12 +7,12 @@ Este diretorio concentra artefatos de engenharia em Markdown e PlantUML para a f
 - `use-case-global.puml`: fronteiras entre setup interno, installer externo e distribuicao.
 - `use-cases.md`: casos de uso UC01-UC12 com rastreabilidade para FR e testes.
 - `handoff-contract.md`: contrato de handoff em linguagem operacional.
-- `migration-from-emacs-a11y.md`: inventario dos 13 modulos legados.
+- `migration-from-emacs-a11y.md`: (histórico) inventário de módulos legados — migração retirada do escopo desta feature.
 - `sequence/first-run-workspace.puml`: fluxo de primeiro uso com workspace isolado.
 - `sequence/bootstrap-handoff.puml`: fluxo de bootstrap com handoff.
 - `sequence/internal-doctor.puml`: fluxo de diagnostico interno e relatorio.
 - `sequence/module-loading.puml`: carregamento resiliente de modulos.
-- `sequence/module-migration-inventory.puml`: fluxo de inventario de migracao.
+- `sequence/module-migration-inventory.puml`: (histórico) fluxo de inventário de migração — não ativo nesta feature.
 
 ## Matriz de compatibilidade de contrato (T083)
 
