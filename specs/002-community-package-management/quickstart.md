@@ -91,3 +91,21 @@ Use-package:
 - Esta etapa atualiza apenas planejamento tecnico; nao implementa arquivos `.el` nem move codigo.
 - Estrategia de monorepo permanece ativa nesta fase.
 - Split para repositorios proprios e possibilidade futura condicionada a maturidade de cada pacote.
+
+## Run batch validation
+
+1. Torne o script executável:
+
+chmod +x quickstart-batch.sh
+
+2. Execute em modo batch (cria workspace em `.eaacs-quickstart-workspace` por padrão):
+
+chmod +x quickstart-batch.sh
+
+3. Verifique a saída do `ert-run-tests-batch` no terminal. Logs operacionais por operação aparecem em `<workspace>/.eaacs-logs/`.
+
+4. Para usar um workspace customizado:
+
+quickstart-batch.sh /tmp/my-eaacs-ws
+
+5. Se houver falhas, cole a saída do terminal e os arquivos de log em `<workspace>/.eaacs-logs/` para diagnóstico.
