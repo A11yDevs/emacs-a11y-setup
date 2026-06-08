@@ -109,12 +109,13 @@ remove, update and list, all with workspace-local state persistence.
 
 | Command | Description |
 |---------|------------|
-| `M-x emacs-a11y-setup-community-packages-list` | List installed packages |
-| `M-x emacs-a11y-setup-community-packages-install` | Install a package |
-| `M-x emacs-a11y-setup-community-packages-activate` | Activate/require a package |
-| `M-x emacs-a11y-setup-community-packages-deactivate` | Deactivate/unload a package |
-| `M-x emacs-a11y-setup-community-packages-remove` | Remove a package |
-| `M-x emacs-a11y-setup-community-packages-update` | Reload a package |
+| `M-x emacs-a11y-packages-list` | List installed packages |
+| `M-x emacs-a11y-packages-install` | Install a package |
+| `M-x emacs-a11y-packages-activate` | Activate/require a package |
+| `M-x emacs-a11y-packages-deactivate` | Deactivate/unload a package |
+| `M-x emacs-a11y-packages-remove` | Remove a package |
+| `M-x emacs-a11y-packages-update` | Reload a package |
+| `M-x emacs-a11y-packages-dashboard` | Show packages dashboard |
 
 **Trust policy**: Only sources under `https://github.com/A11yDevs/` are trusted.
 Destructive operations prompt for confirmation interactively; batch mode

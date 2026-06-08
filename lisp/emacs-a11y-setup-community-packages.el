@@ -417,7 +417,7 @@ When BATCH is non-nil, skip interactive confirmation."
         :message (if (> (length s) 0) s "none")))))
 
 ;; Public interactive wrappers (T012)
-(defun emacs-a11y-setup-community-packages-list (&optional _batch workspace-path)
+(defun emacs-a11y-packages-list (&optional _batch workspace-path)
   "Interactive wrapper for `eaacs-list'."
   (interactive (list nil (read-directory-name "Workspace (default .): ")))
   (let* ((ws (eaacs--normalize-ws workspace-path))
@@ -425,7 +425,7 @@ When BATCH is non-nil, skip interactive confirmation."
     (when (called-interactively-p 'any) (message "%s" (plist-get env :message)))
     env))
 
-(defun emacs-a11y-setup-community-packages-install (name path &optional batch workspace-path)
+(defun emacs-a11y-packages-install (name path &optional batch workspace-path)
   "Interactive wrapper for `eaacs-install'. Prompts NAME and PATH.
 When called programmatically, callers may pass non-nil BATCH to skip interactive confirmations."
   (interactive (list (read-string "Package name: ")
@@ -437,7 +437,7 @@ When called programmatically, callers may pass non-nil BATCH to skip interactive
     (when (called-interactively-p 'any) (message "%s" (plist-get env :message)))
     env))
 
-(defun emacs-a11y-setup-community-packages-remove (name &optional batch workspace-path)
+(defun emacs-a11y-packages-remove (name &optional batch workspace-path)
   "Interactive wrapper for `eaacs-remove'.
 When called interactively, BATCH is nil so destructive confirmation is performed by the engine."
   (interactive (list (read-string "Package name to remove: ")
@@ -448,7 +448,7 @@ When called interactively, BATCH is nil so destructive confirmation is performed
     (when (called-interactively-p 'any) (message "%s" (plist-get env :message)))
     env))
 
-(defun emacs-a11y-setup-community-packages-activate (name &optional batch workspace-path)
+(defun emacs-a11y-packages-activate (name &optional batch workspace-path)
   "Interactive wrapper for `eaacs-activate'."
   (interactive (list (read-string "Package name to activate: ")
                      nil
@@ -458,7 +458,7 @@ When called interactively, BATCH is nil so destructive confirmation is performed
     (when (called-interactively-p 'any) (message "%s" (plist-get env :message)))
     env))
 
-(defun emacs-a11y-setup-community-packages-deactivate (name &optional batch workspace-path)
+(defun emacs-a11y-packages-deactivate (name &optional batch workspace-path)
   "Interactive wrapper for `eaacs-deactivate'."
   (interactive (list (read-string "Package name to deactivate: ")
                      nil
@@ -468,7 +468,7 @@ When called interactively, BATCH is nil so destructive confirmation is performed
     (when (called-interactively-p 'any) (message "%s" (plist-get env :message)))
     env))
 
-(defun emacs-a11y-setup-community-packages-update (name &optional path batch workspace-path)
+(defun emacs-a11y-packages-update (name &optional path batch workspace-path)
   "Interactive wrapper for `eaacs-update'. Prompts optional PATH.
 Callers may pass non-nil BATCH to run without interactive confirmations."
   (interactive (list (read-string "Package name to update: ")
@@ -479,6 +479,33 @@ Callers may pass non-nil BATCH to run without interactive confirmations."
          (env (eaacs-update name (if (string= path "") nil path) batch ws)))
     (when (called-interactively-p 'any) (message "%s" (plist-get env :message)))
     env))
+
+(defun emacs-a11y-packages-dashboard ()
+  "Show community packages dashboard with summary of installed packages."
+  (interactive)
+  (let* ((eaacs--registry (or (condition-case nil
+                                  (let ((f (eaacs--registry-file)))
+                                    (when (file-exists-p f)
+                                      (with-temp-buffer
+                                        (insert-file-contents f)
+                                        (read (current-buffer)))))
+                                (error nil))
+                              nil))
+         (packages (eaacs-list-packages))
+         (buf (get-buffer-create "*a11y-packages*")))
+    (with-current-buffer buf
+      (erase-buffer)
+      (insert "=== A11yDevs Community Packages ===\n\n")
+      (if packages
+          (progn
+            (insert (format "Installed: %d\n\n" (length packages)))
+            (dolist (p packages)
+              (insert (format "  - %s\n" p))))
+        (insert "No packages installed.\n\n"))
+      (insert (format "Registry: %s\n" (eaacs--registry-file)))
+      (goto-char (point-min))
+      (display-buffer buf)))
+  nil)
 
 (defun eaacs--list-of-strings-p (v)
   "Return non-nil if V is nil, a string, or a list of strings.

@@ -56,7 +56,7 @@ All commands return a standardized envelope plist (`:ok`, `:command`,
 | `eaacs-update` | Engine | Reload package file |
 | `eaacs-batch-execute` | Batch | Run any command in batch mode with exit code |
 
-Interactive wrappers (`emacs-a11y-setup-community-packages-*`) add
+Interactive wrappers (`emacs-a11y-packages-*`) add
 `interactive` specs and confirmation prompts for destructive actions.
 
 ### Trust policy
