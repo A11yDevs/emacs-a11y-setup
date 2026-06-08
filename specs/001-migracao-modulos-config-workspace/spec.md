@@ -152,7 +152,8 @@ Como mantenedor de distribuição, quero continuar empacotando e distribuindo o 
 - **SC-003**: Em testes de handoff do bootstrap externo para o setup interno, 95 por cento das execuções com dados válidos concluem com relatório textual acionável.
 - **SC-004**: Em simulações com falha de módulo opcional, 100 por cento dos casos mantêm acesso ao diagnóstico interno e registram erro compreensível.
 - **SC-005**: O relatório interno apresenta, em 100 por cento das execuções, status de workspace, perfil ativo, módulos carregados/falhos, estado de fala, alertas e próximos passos.
-- **SC-006**: O perfil padrão conservador permanece livre de módulos que exigem credenciais em 100 por cento dos cenários de inicialização padrão.
+ - **SC-002**: REMOVED. Reason: no legacy modules remain in scope; inventory requirement not applicable.
+ - **SC-006**: REMOVED. Reason: profile installation is not part of this feature; criterion not applicable.
 
 ## Assumptions
 
