@@ -147,8 +147,8 @@ Returns the exit code (0 success, 1 failure) for use with `kill-emacs'."
 
 (defun eaacs--normalize-source-url (source-url)
   "Normalize SOURCE-URL: strip trailing .git and /."
-    (let* ((raw (or source-url eaacs--default-source-url))
-      (trimmed (replace-regexp-in-string "/\\'" "" raw)))
+  (let* ((raw (or source-url eaacs--default-source-url))
+         (trimmed (replace-regexp-in-string "/\\'" "" raw)))
     (replace-regexp-in-string "\\.git\\'" "" trimmed)))
 
 (defun eaacs--normalize-ref (ref)

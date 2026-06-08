@@ -1,111 +1,203 @@
-# Quickstart: Gestao de Pacotes Comunitarios A11yDevs
+# Quickstart: Gestão de Pacotes Comunitários A11yDevs
 
 ## Goal
 
-Validar o planejamento tecnico da distribuicao modular de pacotes Emacs Lisp via `package-vc-install`, usando o monorepo da Comunidade A11yDevs, sem copia manual de arquivos.
+Validar o engine de gerenciamento de pacotes comunitários A11yDevs (`eaacs-*`),
+incluindo instalação, ativação, desativação, remoção, atualização e listagem
+de pacotes, com saída em envelope padronizado, política de confiança A11yDevs
+e diagnóstico de falhas.
 
 ## Prerequisites
 
-- Emacs com suporte a `package-vc-install` no ambiente de validacao.
-- Acesso ao repositorio `https://github.com/A11yDevs/emacs-a11y-setup`.
-- Estrutura de pacotes em `lisp/<nome-pacote>/` definida no plano tecnico.
- - Estrutura de pacotes em `lisp/<nome-pacote>/` definida no plano tecnico.
- - Consumidores legados (ex.: pipelines de empacotamento) podem existir, mas sua validação é opcional e fora do escopo inicial.
+- Emacs 29+ com suporte a `package-vc-install`.
+- Este repositório clonado (`A11yDevs/emacs-a11y-setup`).
+- Engine implementado em `lisp/emacs-a11y-setup-community-packages.el`.
+- Artefato de teste em `specs/002-community-package-management/artifacts/a11y-hello/`.
 
-## Planned Validation Flow
+## Batch Validation Commands
 
-1. Validar instalacao de um pacote individual (ex.: `a11y-java`).
-2. Validar instalacao de um pacote opcional (ex.: `a11y-gptel`) sem depender de modulos nao relacionados.
-3. Validar instalacao do pacote agregador `a11y-emacs`.
-4. Validar carregamento por `require` apos instalacao.
-5. Validar exemplos equivalentes com `use-package`.
-6. Validar autoloads, customizacao e dependencias declaradas.
+Os comandos abaixo usam `eaacs-batch-execute` em modo batch.
+A saída de cada comando é uma linha no formato:
 
-## Canonical Installation Examples
-
-Pacote individual:
-
-```elisp
-(package-vc-install
- '(a11y-java
-  :url "https://github.com/A11yDevs/emacs-a11y-setup.git"
-   :branch "main"
-   :lisp-dir "lisp/a11y-java"
-   :main-file "a11y-java.el"))
+```
+[OK|FAIL] <comando> | package=<nome> | <mensagem> | errors=(...) | next=<ação>
 ```
 
-Pacote opcional:
+O código de saída (exit code) é 0 para sucesso, 1 para falha.
 
-```elisp
-(package-vc-install
- '(a11y-gptel
-  :url "https://github.com/A11yDevs/emacs-a11y-setup.git"
-   :branch "main"
-   :lisp-dir "lisp/a11y-gptel"
-   :main-file "a11y-gptel.el"))
+### 1. Listar pacotes (vazio inicial)
+
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval "(eaacs-batch-execute 'list nil)"
 ```
 
-Pacote agregador:
+**Saída esperada**: `[OK] list | none`
 
-```elisp
-(package-vc-install
- '(a11y-emacs
-  :url "https://github.com/A11yDevs/emacs-a11y-setup.git"
-   :branch "main"
-   :lisp-dir "lisp/a11y-emacs"
-   :main-file "a11y-emacs.el"))
+### 2. Instalar pacote individual
+
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval '(eaacs-batch-execute 'install nil "a11y-hello" "specs/002-community-package-management/artifacts/a11y-hello/a11y-hello.el" t)'
 ```
 
-## Canonical Load Examples
+**Saída esperada**: `[OK] install | package=a11y-hello | Installed a11y-hello`
 
-Require:
+### 3. Ativar pacote
 
-```elisp
-(require 'a11y-java)
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval '(eaacs-batch-execute 'activate nil "a11y-hello" t)'
 ```
 
-Use-package:
+**Saída esperada**: `[OK] activate | package=a11y-hello | Activated a11y-hello`
 
-```elisp
-(use-package a11y-java
-  :vc (:url "https://github.com/A11yDevs/emacs-a11y-setup.git"
-       :branch "main"
-       :lisp-dir "lisp/a11y-java"
-       :main-file "a11y-java.el"))
+### 4. Listar pacotes (com ativo)
+
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval '(eaacs-batch-execute 'list nil)'
 ```
 
-## Planned Technical Checks
+**Saída esperada**: `[OK] list | a11y-hello(active)`
 
-- Metadados obrigatorios presentes em cada pacote.
-- Comandos publicos com `;;;###autoload`, quando aplicavel.
-- Opcoes customizaveis com `defgroup`/`defcustom`, quando aplicavel.
-- Ausencia de dependencia circular.
-- `Package-Requires` consistente com uso real.
-- Pacotes opcionais instalaveis isoladamente.
-- `a11y-emacs` carregando/dependo dos modulos base.
-- README minimo por pacote com exemplos funcionais.
-- Validação de consumidores legados é opcional e fora do escopo inicial.
+### 5. Desativar pacote
 
-## Notes
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval '(eaacs-batch-execute 'deactivate nil "a11y-hello" t)'
+```
 
-- Esta etapa atualiza apenas planejamento tecnico; nao implementa arquivos `.el` nem move codigo.
-- Estrategia de monorepo permanece ativa nesta fase.
-- Split para repositorios proprios e possibilidade futura condicionada a maturidade de cada pacote.
+**Saída esperada**: `[OK] deactivate | package=a11y-hello | Deactivated a11y-hello`
 
-## Run batch validation
+### 6. Remover pacote
 
-1. Torne o script executável:
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval '(eaacs-batch-execute 'remove nil "a11y-hello" t)'
+```
 
-chmod +x quickstart-batch.sh
+**Saída esperada**: `[OK] remove | package=a11y-hello | Removed a11y-hello`
 
-2. Execute em modo batch (cria workspace em `.eaacs-quickstart-workspace` por padrão):
+### 7. Instalação idempotente
 
-chmod +x quickstart-batch.sh
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval '(progn
+  (eaacs-batch-execute '\''install nil "a11y-hello" "specs/002-community-package-management/artifacts/a11y-hello/a11y-hello.el" t)
+  (eaacs-batch-execute '\''install nil "a11y-hello" "specs/002-community-package-management/artifacts/a11y-hello/a11y-hello.el" t)
+  (eaacs-batch-execute '\''list nil))'
+```
 
-3. Verifique a saída do `ert-run-tests-batch` no terminal. Logs operacionais por operação aparecem em `<workspace>/.eaacs-logs/`.
+**Saída esperada**: `[OK] list | a11y-hello` (apenas uma entrada, mesmo com duas instalações)
 
-4. Para usar um workspace customizado:
+### 8. Bloqueio de origem não confiável
 
-quickstart-batch.sh /tmp/my-eaacs-ws
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval '(eaacs-batch-execute '\''install nil "evil" "/tmp/evil.el" t "https://github.com/evil/malware" "main")'
+```
 
-5. Se houver falhas, cole a saída do terminal e os arquivos de log em `<workspace>/.eaacs-logs/` para diagnóstico.
+**Saída esperada**: `[FAIL] install | package=evil | Blocked source: not under A11yDevs | errors=(untrusted-source:...) | next=Use a repository under https://github.com/A11yDevs/.`
+
+### 9. Runtime check
+
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval "(eaacs-batch-execute 'eaacs-check-runtime nil)"
+```
+
+**Saída esperada**: `[OK] runtime-check | Runtime OK`
+
+### 10. Comando desconhecido
+
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval "(eaacs-batch-execute 'nonexistent-command nil)"
+```
+
+**Saída esperada**: `[FAIL] nonexistent-command | Unknown command: nonexistent-command | errors=(unknown-command:nonexistent-command) | next=Check available commands: list, install, remove, activate, deactivate, update`
+
+## Running the ERT Test Suite
+
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  -l test/emacs-a11y-setup-community-packages-tests.el \
+  -f ert-run-tests-batch
+```
+
+**Resultado esperado**: `Ran 27 tests, 27 results as expected, 0 unexpected`
+
+## Public API (Engine Commands)
+
+Todos os comandos aceitam `workspace-path` como primeiro argumento (ou `nil`
+para usar `default-directory`) e retornam um envelope plist padronizado.
+
+| Comando | Assinatura | Descrição |
+|---------|-----------|-----------|
+| `eaacs-install` | `(name path &optional batch workspace source-url ref)` | Instala pacote |
+| `eaacs-activate` | `(name &optional batch workspace)` | Ativa/require pacote |
+| `eaacs-deactivate` | `(name &optional batch workspace)` | Desativa/unload pacote |
+| `eaacs-remove` | `(name &optional batch workspace)` | Remove do registry |
+| `eaacs-update` | `(name &optional path batch workspace source-url ref)` | Recarrega pacote |
+| `eaacs-list` | `(&optional workspace)` | Lista pacotes instalados |
+| `eaacs-batch-execute` | `(command workspace-path &rest args)` | Executa em batch, retorna exit code |
+
+## Envelope Contract
+
+Cada comando retorna um envelope plist compatível com
+`public-commands.schema.json` contendo:
+
+- `:ok` — booleano
+- `:command` — string
+- `:package-id` — string ou nil
+- `:state-before` / `:state-after` — string ou nil
+- `:changed` — booleano
+- `:message` — string (linha única)
+- `:warnings` / `:errors` — listas de strings
+- `:next-action` — string ou nil
+- `:log-path` — string ou nil
+
+## Logs
+
+Operações gravam logs em `<workspace>/.eaacs-logs/<comando>-<pacote>-<timestamp>.log`.
+Para workspace explícito, use:
+
+```sh
+emacs -Q --batch \
+  -l lisp/emacs-a11y-setup-community-packages.el \
+  --eval '(eaacs-batch-execute '\''install "/tmp/eaacs-ws" "a11y-hello" "specs/002-community-package-management/artifacts/a11y-hello/a11y-hello.el" t)'
+```
+
+Logs estarão em `/tmp/eaacs-ws/.eaacs-logs/`.
+
+## Trust Policy
+
+- Apenas URLs sob `https://github.com/A11yDevs/` são confiáveis.
+- Origens fora da política são bloqueadas com diagnostico e next-action.
+- A validação ocorre antes de qualquer mutação no registry ou disco.
+
+## Interactive Wrappers
+
+Para uso interativo no Emacs, os comandos abaixo solicitam confirmação
+(`y-or-n-p`) em ações destrutivas (remove, deactivate, update):
+
+- `M-x emacs-a11y-setup-community-packages-list`
+- `M-x emacs-a11y-setup-community-packages-install`
+- `M-x emacs-a11y-setup-community-packages-activate`
+- `M-x emacs-a11y-setup-community-packages-deactivate`
+- `M-x emacs-a11y-setup-community-packages-remove`
+- `M-x emacs-a11y-setup-community-packages-update`
+
+Para chamada programática em batch, passe `batch=t` para pular confirmações.

@@ -30,3 +30,48 @@ A feature nao publica pacote em MELPA/ELPA neste momento, mas preserva compatibi
 - Entradas publicas estaveis e documentadas.
 - Testes ERT em batch para validacao automatizada.
 - Contrato de handoff versionado para integracao externa sem acoplamento interno.
+
+---
+
+## Feature 002: Community Package Management
+
+**Status**: Implemented | **Spec**: `specs/002-community-package-management/`
+
+The community package engine (`lisp/emacs-a11y-setup-community-packages.el`)
+provides workspace-local package management for A11yDevs packages.
+
+### Public commands
+
+All commands return a standardized envelope plist (`:ok`, `:command`,
+`:package-id`, `:message`, `:errors`, `:next-action`, etc.) compatible with
+`specs/002-community-package-management/contracts/public-commands.schema.json`.
+
+| Command | Type | Description |
+|---------|------|-------------|
+| `eaacs-list` | Engine | List installed packages |
+| `eaacs-install` | Engine | Install package from path |
+| `eaacs-activate` | Engine | Activate/require package |
+| `eaacs-deactivate` | Engine | Deactivate/unload package |
+| `eaacs-remove` | Engine | Remove from registry |
+| `eaacs-update` | Engine | Reload package file |
+| `eaacs-batch-execute` | Batch | Run any command in batch mode with exit code |
+
+Interactive wrappers (`emacs-a11y-setup-community-packages-*`) add
+`interactive` specs and confirmation prompts for destructive actions.
+
+### Trust policy
+
+- Only `https://github.com/A11yDevs/*` URLs are trusted.
+- Untrusted sources are blocked with diagnostic message and `next-action`.
+- Validation occurs before any mutation.
+
+### Workspace isolation
+
+- State persisted in `.eaacs-registry.el` inside workspace directory.
+- Logs written to `.eaacs-logs/` inside workspace.
+- Personal `~/.emacs.d` is never modified.
+
+### Quickstart
+
+See `specs/002-community-package-management/quickstart.md` for complete
+batch validation commands and expected output.

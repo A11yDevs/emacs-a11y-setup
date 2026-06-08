@@ -99,6 +99,42 @@ By default, `emacs-a11y-setup` resolves these locations:
 - `EMACS_A11Y_HOME` or platform default root
 - `EMACS_A11Y_DEFAULT_WORKSPACE` or `<EMACS_A11Y_HOME>/workspace`
 
+## Community Package Management (engine)
+
+The file `lisp/emacs-a11y-setup-community-packages.el` provides a lightweight
+engine for managing A11yDevs community packages: install, activate, deactivate,
+remove, update and list, all with workspace-local state persistence.
+
+**Public commands** (interactive):
+
+| Command | Description |
+|---------|------------|
+| `M-x emacs-a11y-setup-community-packages-list` | List installed packages |
+| `M-x emacs-a11y-setup-community-packages-install` | Install a package |
+| `M-x emacs-a11y-setup-community-packages-activate` | Activate/require a package |
+| `M-x emacs-a11y-setup-community-packages-deactivate` | Deactivate/unload a package |
+| `M-x emacs-a11y-setup-community-packages-remove` | Remove a package |
+| `M-x emacs-a11y-setup-community-packages-update` | Reload a package |
+
+**Trust policy**: Only sources under `https://github.com/A11yDevs/` are trusted.
+Destructive operations prompt for confirmation interactively; batch mode
+skips prompts when `batch=t`.
+
+See `specs/002-community-package-management/quickstart.md` for full batch
+validation commands and expected output.
+
+## Workspace-local state
+
+The engine persists package state in `.eaacs-registry.el` inside the active
+workspace. Operation logs are stored in `.eaacs-logs/`. No personal config
+(`~/.emacs.d`) is ever modified.
+
+## Error classification
+
+Failures are classified as `network`, `repository`, `state-conflict` or
+`unknown`, each with a clear `next-action` field for the user or script to
+follow.
+
 Advanced overrides:
 
 - `EMACS_A11Y_HOME`: root directory for package, workspace and launchers.
