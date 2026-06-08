@@ -90,7 +90,53 @@ Sanitizes `:message' to a single-line, trimmed string."
   "Map ENVELOPE to batch exit code. 0=ok, 1=fail."
   (if (plist-get env :ok) 0 1))
 
-;; Source normalization / trust policy
+(defun eaacs--format-batch-result (env)
+  "Format ENVELOPE for batch/script consumption.
+Returns a cons cell (EXIT-CODE . FORMATTED-STRING) where FORMATTED-STRING
+is a human-readable line suitable for stdout and EXIT-CODE is 0 (ok) or 1 (fail)."
+  (let ((exit-code (eaacs--envelope->exit-code env))
+        (cmd (or (plist-get env :command) "?"))
+        (msg (or (plist-get env :message) ""))
+        (pkg (plist-get env :package-id))
+        (errs (plist-get env :errors))
+        (warns (plist-get env :warnings))
+        (next (plist-get env :next-action))
+        (parts '()))
+    (push (format "[%s] %s" (if (plist-get env :ok) "OK" "FAIL") cmd) parts)
+    (when pkg (push (format "package=%s" pkg) parts))
+    (push (format "%s" msg) parts)
+    (when errs (push (format "errors=(%s)" (mapconcat #'identity errs "; ")) parts))
+    (when warns (push (format "warnings=(%s)" (mapconcat #'identity warns "; ")) parts))
+    (when next (push (format "next=%s" next) parts))
+    (cons exit-code (mapconcat #'identity (nreverse parts) " | "))))
+
+(defun eaacs--batch-write (env)
+  "Write batch-formatted ENVELOPE to `standard-output` and return exit code.
+Prints one line: the formatted message.  Returns the exit code (0 or 1)
+for use with `kill-emacs' in batch scripts."
+  (pcase-let ((`(,code . ,line) (eaacs--format-batch-result env)))
+    (princ line)
+    (terpri)
+    code))
+
+(defun eaacs-batch-execute (command workspace-path &rest args)
+  "Execute COMMAND with ARGS under WORKSPACE-PATH, print normalized result, return exit code.
+COMMAND is a symbol naming an `eaacs-' function (e.g. 'install, 'remove, 'list).
+ARGS are command-specific arguments passed through to the COMMAND function.
+WORKSPACE-PATH is the directory for registry isolation, or nil for `default-directory'.
+
+Returns the exit code (0 success, 1 failure) for use with `kill-emacs'."
+  (let* ((cmd-fn (intern-soft (format "eaacs-%s" command)))
+         (env (if (fboundp cmd-fn)
+                  (eaacs--with-workspace workspace-path
+                    (apply cmd-fn args))
+                (eaacs--make-envelope (format "%s" command) nil
+                  :message (format "Unknown command: %s" command)
+                  :errors (list (format "unknown-command:%s" command))
+                  :next-action "Check available commands: list, install, remove, activate, deactivate, update"))))
+    (eaacs--batch-write env)))
+
+;; T019: source normalization and trust policy
 (defconst eaacs--default-source-url "https://github.com/A11yDevs/emacs-a11y-setup"
   "Default source URL when none is provided.")
 
@@ -328,8 +374,71 @@ If BATCH is non-nil, behave in batch mode and return envelope instead of prompti
                                         :message (if ok "updated" "update failed")
                                         :log-path lp)))
           (eaacs--write-log lp env)
-          (eaacs--save-registry workspace-path)
+(unless batch (message "%s" (plist-get env :message)))
           env)))))
+
+(defun eaacs-activate (name &optional batch workspace-path)
+  "Activate package NAME and return envelope."
+  (eaacs--with-workspace workspace-path
+    (let* ((before (eaacs-list-packages))
+           (ok (eaacs-activate-package name))
+           (lp (eaacs--log-path workspace-path "activate" name))
+           (env (eaacs--make-envelope "activate" ok
+                  :package-id name
+                  :state-before (when before (mapconcat #'identity before ","))
+                  :state-after (when ok (mapconcat #'identity (eaacs-list-packages) ","))
+                  :changed ok
+                  :log-path lp
+                  :message (if ok (format "Activated %s" name)
+                             (format "Activate failed: %s" name)))))
+      (eaacs--write-log lp env)
+      (unless batch (message "%s" (plist-get env :message)))
+      env)))
+
+(defun eaacs-deactivate (name &optional batch workspace-path)
+  "Deactivate package NAME and return envelope."
+  (eaacs--with-workspace workspace-path
+    (when (or batch (y-or-n-p (format "Desativar pacote %s? " name)))
+      (let* ((before (eaacs-list-packages))
+             (ok (eaacs-deactivate-package name))
+             (lp (eaacs--log-path workspace-path "deactivate" name))
+             (env (eaacs--make-envelope "deactivate" ok
+                    :package-id name
+                    :state-before (when before (mapconcat #'identity before ","))
+                    :state-after (when ok (mapconcat #'identity (eaacs-list-packages) ","))
+                    :changed ok
+                    :log-path lp
+                    :message (if ok (format "Deactivated %s" name)
+                               (format "Deactivate failed: %s" name)))))
+        (eaacs--write-log lp env)
+        (unless batch (message "%s" (plist-get env :message)))
+        env))))
+
+(defun eaacs-update (name &optional path batch workspace-path source-url ref)
+  "Update package NAME and return envelope.
+When BATCH is non-nil, skip interactive confirmation."
+  (eaacs--with-workspace workspace-path
+    (let ((policy (eaacs-validate-source-policy source-url ref)))
+      (if (not (plist-get policy :ok))
+          (eaacs--make-envelope "update" nil :package-id name :changed nil
+            :message (plist-get policy :message)
+            :errors (plist-get policy :errors)
+            :next-action (plist-get policy :next-action))
+        (when (or batch (y-or-n-p (format "Atualizar pacote %s? " name)))
+          (let* ((before (eaacs-list-packages))
+                 (ok (eaacs-update-package name path))
+                 (lp (eaacs--log-path workspace-path "update" name))
+                 (env (eaacs--make-envelope "update" ok
+                        :package-id name
+                        :state-before (when before (mapconcat #'identity before ","))
+                        :state-after (when ok (mapconcat #'identity (eaacs-list-packages) ","))
+                        :changed ok
+                        :log-path lp
+                        :message (if ok (format "Updated %s" name)
+                                   (format "Update failed: %s" name)))))
+            (eaacs--write-log lp env)
+            (unless batch (message "%s" (plist-get env :message)))
+            env))))))
 
 (defun eaacs-list (&optional workspace-path)
   "Return envelope with known packages." 
