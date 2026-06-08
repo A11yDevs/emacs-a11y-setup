@@ -1,3 +1,45 @@
+# Init Audit Checklist
+
+Objetivo: auditar arquivos `init-*.el` no repositório e prevenir migração automática
+de configurações pessoais para o workspace. Esse checklist ajuda a identificar
+scripts que alteram `~/.emacs.d` ou que presumem um ambiente interativo.
+
+Passos executáveis:
+
+1. Listar arquivos `init-*.el` no repositório:
+
+```bash
+ls -1 **/init-*.el || true
+```
+
+2. Para cada `init-*.el`, verificar padrões problemáticos (exemplos):
+
+- Uso direto de `user-emacs-directory` para escrita sem checagem de sandbox.
+- Execução de comandos interativos (`read-buffer`, `switch-to-buffer` etc.) sem
+  proteção para modos batch.
+- Chamadas que alteram configurações globais sem opção de rollback.
+
+3. Executar uma checagem rápida via `grep` para padrões comuns:
+
+```bash
+grep -Hn "user-emacs-directory\|switch-to-buffer\|read-buffer\|package-initialize" -n lisp || true
+```
+
+4. Validar que arquivos `init-*.el` só definem funções/variáveis e não executam
+   mutações automaticamente; se necessário, envolver execuções em guardas:
+
+```elisp
+(when (and (not noninteractive) (bound-and-true-p after-init-time))
+  ;; ação interativa segura
+  )
+```
+
+5. Documentar exceções ou necessidades de migração em `specs/002-community-package-management/checklists/init-audit.md`.
+
+Critério de sucesso:
+
+- Todos os `init-*.el` auditados e/ou modificados para evitar mutações automáticas
+  em ambientes batch; exceções documentadas no checklist.
 # Init-audit checklist
 
 Purpose: auditar arquivos `init-*.el` para identificar riscos de migração automática e detectar padrões que possam impedir extração segura de pacotes.

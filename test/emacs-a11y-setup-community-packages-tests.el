@@ -195,16 +195,55 @@
          (reg2 (expand-file-name ".eaacs-registry.el" ws2)))
     (unwind-protect
         (progn
-          (should (plist-get (emacs-a11y-setup-community-packages-install "a11y-hello" pkg-path ws1) :ok))
+          (should (plist-get (emacs-a11y-setup-community-packages-install "a11y-hello" pkg-path t ws1) :ok))
           (should (file-exists-p reg1))
           (should (not (file-exists-p reg2)))
           ;; install same package in other workspace
-          (should (plist-get (emacs-a11y-setup-community-packages-install "a11y-hello" pkg-path ws2) :ok))
+          (should (plist-get (emacs-a11y-setup-community-packages-install "a11y-hello" pkg-path t ws2) :ok))
           (should (file-exists-p reg2)))
       (when (file-exists-p reg1) (delete-file reg1))
       (when (file-exists-p reg2) (delete-file reg2))
       (when (file-directory-p ws1) (delete-directory ws1 t))
       (when (file-directory-p ws2) (delete-directory ws2 t)))))
+
+;; T015: batch result normalization and exit code mapping
+(ert-deftest eaacs-format-batch-ok-test ()
+  "T015: envelope ok formatado como [OK] com código 0."
+  (let* ((env (eaacs--make-envelope "list" t :message "a11y-hello" :package-id nil))
+         (result (eaacs--format-batch-result env)))
+    (should (consp result))
+    (should (= (car result) 0))
+    (should (string-match-p "^\\[OK\\]" (cdr result)))))
+
+(ert-deftest eaacs-format-batch-fail-test ()
+  "T015: envelope fail formatado como [FAIL] com código 1."
+  (let* ((env (eaacs--make-envelope "install" nil :message "error" :errors '("something-wrong")))
+         (result (eaacs--format-batch-result env)))
+    (should (consp result))
+    (should (= (car result) 1))
+    (should (string-match-p "^\\[FAIL\\]" (cdr result)))))
+
+(ert-deftest eaacs-batch-write-returns-exit-code-test ()
+  "T015: batch-write retorna 0 para ok, 1 para fail."
+  (should (= (eaacs--batch-write (eaacs--make-envelope "test" t :changed nil)) 0))
+  (should (= (eaacs--batch-write (eaacs--make-envelope "test" nil :changed nil)) 1)))
+
+(ert-deftest eaacs-batch-execute-list-test ()
+  "T015: batch-execute para list retorna 0 com pacotes listados."
+  (let ((eaacs--registry nil)
+        (ws (expand-file-name "specs/002-community-package-management/artifacts/a11y-hello" default-directory)))
+    (eaacs-install "a11y-hello" "a11y-hello.el" t ws)
+    (should (= (eaacs-batch-execute 'list ws) 0))))
+
+(ert-deftest eaacs-batch-execute-install-test ()
+  "T015: batch-execute para install retorna 0 no sucesso."
+  (let ((eaacs--registry nil)
+        (ws (expand-file-name "specs/002-community-package-management/artifacts/a11y-hello" default-directory)))
+    (should (= (eaacs-batch-execute 'install "a11y-hello" "a11y-hello.el" t ws) 0))))
+
+(ert-deftest eaacs-batch-execute-unknown-command-test ()
+  "T015: batch-execute para comando desconhecido retorna 1."
+  (should (= (eaacs-batch-execute 'nonexistent-command) 1)))
 
 (provide 'emacs-a11y-setup-community-packages-tests)
 
