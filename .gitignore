@@ -21,3 +21,8 @@ Thumbs.db
 *.swp
 *.log
 .env*
+.vscode/
+.idea/
+tmp/
+.eaacs-quickstart-workspace/
+.eaacs-logs/
