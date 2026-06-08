@@ -3,7 +3,7 @@
 
 ;; Author: A11yDevs
 ;; Version: 0.1
-;; Package-Requires: ((emacs "26.1"))
+;; Package-Requires: ((emacs "28.1"))
 ;; Keywords: accessibility, test
 ;; URL: https://github.com/A11yDevs/emacs-a11y-setup/tree/main/lisp/a11y-hello
 

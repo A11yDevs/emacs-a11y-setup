@@ -35,10 +35,10 @@ Generated tasks: T001..T034
 
 Purpose: Project initialization and basic structure for feature implementation.
 
-- [ ] T001 Create feature checklist directory and README: `specs/002-community-package-management/checklists/README.md` (esqueleto de checklists e instruções de uso).
-- [ ] T002 [P] Create tests directory and placeholder: `specs/002-community-package-management/tests/placeholder.md` (base para testes ERT e documentação de cenários).
-- [ ] T003 [P] Ensure artifacts directory exists and include hello-world artifact: `specs/002-community-package-management/artifacts/a11y-hello/` (verificar presença de `a11y-hello.el` e `README.md`).
-- [ ] T004 Create contracts README: `specs/002-community-package-management/contracts/README.md` (explicar schema, uso e localização de `public-commands` contract files).
+- [x] T001 Create feature checklist directory and README: `specs/002-community-package-management/checklists/README.md` (esqueleto de checklists e instruções de uso).
+- [x] T002 [P] Create tests directory and placeholder: `specs/002-community-package-management/tests/placeholder.md` (base para testes ERT e documentação de cenários).
+- [x] T003 [P] Ensure artifacts directory exists and include hello-world artifact: `specs/002-community-package-management/artifacts/a11y-hello/` (verificar presença de `a11y-hello.el` e `README.md`).
+- [x] T004 Create contracts README: `specs/002-community-package-management/contracts/README.md` (explicar schema, uso e localização de `public-commands` contract files).
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
@@ -51,7 +51,7 @@ Purpose: Core validations and safeguards that MUST be completed before user stor
 
 The Constitution Check task T028 has been removed. Proceed with implementations following standard code-review and CI policies; maintainers must still verify metadata, accessibility checks and tests before merging changes that affect `lisp/`.
 
-- [ ] T029 Create checklist: `specs/002-community-package-management/checklists/package-requires-validation.md` (esqueleto e itens executáveis para validar `Package-Requires`).
+- [x] T029 Create checklist: `specs/002-community-package-management/checklists/package-requires-validation.md` (esqueleto e itens executáveis para validar `Package-Requires`).
 - [ ] T030 Create checklist: `specs/002-community-package-management/checklists/init-audit.md` (esqueleto e itens executáveis para auditar `init-*.el` e prevenir migração automática).
 
 - [ ] T032 Confirm monorepo repository: criar/confirmar `A11yDevs/emacs-a11y-setup` com árvore `lisp/` e registrar URL canônica (ex.: https://github.com/A11yDevs/emacs-a11y-setup/tree/main/lisp). Incluir evidência em `specs/002-community-package-management/`.
@@ -74,11 +74,11 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 
 ### Implementation for User Story 1
 
-- [ ] T009 Implementar em lisp/emacs-a11y-setup-community-packages.el o comando de listagem com renderização textual acessível e reconciliação com o state registry.
-- [ ] T010 Implementar em lisp/emacs-a11y-setup-community-packages.el os handlers de install, activate, deactivate e remove com transições de estado explícitas e persistência workspace-local.
-- [ ] T011 Implementar em lisp/emacs-a11y-setup-community-packages.el o fluxo de update com resultado por pacote, resumo final e preservação do estado de ativação.
-- [ ] T012 Amarrar em lisp/emacs-a11y-setup-community-packages.el as seis entradas públicas emacs-a11y-setup-community-packages-list/install/activate/deactivate/remove/update ao mesmo engine interno.
-- [ ] T013 Ajustar em lisp/emacs-a11y-setup-community-packages.el as mensagens de sucesso, aviso e erro para manter texto curto, linear e acionável.
+ - [x] T009 Implementar em lisp/emacs-a11y-setup-community-packages.el o comando de listagem com renderização textual acessível e reconciliação com o state registry.
+ - [x] T010 Implementar em lisp/emacs-a11y-setup-community-packages.el os handlers de install, activate, deactivate e remove com transições de estado explícitas e persistência workspace-local.
+ - [x] T011 Implementar em lisp/emacs-a11y-setup-community-packages.el o fluxo de update com resultado por pacote, resumo final e preservação do estado de ativação.
+ - [x] T012 Amarrar em lisp/emacs-a11y-setup-community-packages.el as seis entradas públicas emacs-a11y-setup-community-packages-list/install/activate/deactivate/remove/update ao mesmo engine interno.
+ - [x] T013 Ajustar em lisp/emacs-a11y-setup-community-packages.el as mensagens de sucesso, aviso e erro para manter texto curto, linear e acionável.
 
 **Checkpoint**: A jornada básica de gerenciamento comunitário fica funcional e pode ser validada sozinha como MVP.
 
