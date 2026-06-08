@@ -31,6 +31,22 @@ Este arquivo lista tarefas executáveis organizadas por fase e por história de 
 
 Generated tasks: T001..T034
 
+## Phase 1: Setup (Shared Infrastructure)
+
+Purpose: Project initialization and basic structure for feature implementation.
+
+- [ ] T001 Create feature checklist directory and README: `specs/002-community-package-management/checklists/README.md` (esqueleto de checklists e instruções de uso).
+- [ ] T002 [P] Create tests directory and placeholder: `specs/002-community-package-management/tests/placeholder.md` (base para testes ERT e documentação de cenários).
+- [ ] T003 [P] Ensure artifacts directory exists and include hello-world artifact: `specs/002-community-package-management/artifacts/a11y-hello/` (verificar presença de `a11y-hello.el` e `README.md`).
+- [ ] T004 Create contracts README: `specs/002-community-package-management/contracts/README.md` (explicar schema, uso e localização de `public-commands` contract files).
+
+## Phase 2: Foundational (Blocking Prerequisites)
+
+Purpose: Core validations and safeguards that MUST be completed before user story implementations.
+
+- [ ] T005 [P] Add diagnostics-first checklist: `specs/002-community-package-management/checklists/diagnostics-checklist.md` (itens executáveis para `doctor/check` antes de mutações).
+- [ ] T006 [P] Add workspace isolation checklist: `specs/002-community-package-management/checklists/workspace-isolation.md` (itens para garantir que `~/.emacs.d`/config pessoal não seja sobrescrito).
+
 ## Governance
 
 The Constitution Check task T028 has been removed. Proceed with implementations following standard code-review and CI policies; maintainers must still verify metadata, accessibility checks and tests before merging changes that affect `lisp/`.
