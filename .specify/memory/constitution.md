@@ -207,7 +207,7 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
 
 * Todo artefato gerado por /speckit.specify, /speckit.plan, /speckit.tasks e /speckit.implement MUST declarar aderência explícita aos princípios desta constituição.
 * Nenhum plano, especificação ou task list pode ser aprovado com conflito não justificado contra princípios de acessibilidade, isolamento, diagnóstico prévio, modularidade e qualidade.
-* O Constitution Check MUST registrar evidências objetivas de conformidade, riscos e pendências antes de iniciar implementação.
+* O Constitution Check SHOULD registrar evidências objetivas de conformidade, riscos e pendências antes de implementação quando viável; quando não for possível, deve ser registrada uma exceção documentada com justificativa técnica e aprovador responsável.
 * Toda exceção MUST conter justificativa técnica, impacto esperado, prazo de revisão e issue de acompanhamento vinculada.
 
 ## Governance
@@ -271,7 +271,7 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
    * Limitações conhecidas MUST permanecer visíveis em documentação oficial.
 
 12. Revisão de conformidade:
-   * Em cada /speckit.plan e /speckit.tasks, o Constitution Check MUST ser revisado.
+   * Em cada /speckit.plan e /speckit.tasks, recomenda-se que o Constitution Check seja revisado; exceções documentadas e aprovadas por um mantenedor ativo permitem prosseguir com implementação.
    * Toda mudança que afete fluxo de instalação MUST atualizar documentação e testes de diagnóstico.
    * Novos comandos destrutivos ou potencialmente destrutivos MUST exigir confirmação explícita.
    * Novas dependências externas MUST justificar necessidade, licença, manutenção e impacto de acessibilidade.
@@ -286,4 +286,4 @@ Rationale: estabilidade operacional e previsibilidade são partes do requisito d
    * Releases SHOULD declarar compatibilidade mínima entre emacs-a11y-installer, emacs-a11y-setup e repositórios de distribuição.
    * Alterações que movam código entre repositórios MUST incluir plano de migração e preservação de compatibilidade.
 
-**Version**: 1.3.0 | **Ratified**: 2026-06-03 | **Last Amended**: 2026-06-03
+**Version**: 2.0.0 | **Ratified**: 2026-06-07 | **Last Amended**: 2026-06-07
