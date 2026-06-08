@@ -1,0 +1,27 @@
+name: Run ERT tests
+
+on:
+  pull_request:
+    paths:
+      - 'lisp/**'
+      - 'test/**'
+      - 'specs/002-community-package-management/**'
+  push:
+    branches: [ main, 'feature/**' ]
+
+jobs:
+  ert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install emacs-nox
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y emacs-nox
+      - name: Run metadata validation
+        run: |
+          chmod +x scripts/validate-metadata.sh
+          ./scripts/validate-metadata.sh
+      - name: Run ERT tests
+        run: |
+          emacs -Q --batch -l ert -L . -l test/emacs-a11y-setup-community-packages-tests.el -f ert-run-tests-batch
