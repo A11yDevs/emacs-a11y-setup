@@ -28,12 +28,7 @@
   - Argumentos ad hoc sem schema: rejeitada por baixa robustez.
   - Dependência de layout interno do workspace: rejeitada por violar baixo acoplamento.
 
-## Decisão 5: Estratégia de migração de módulos legados
-- Decisão: inventariar módulos legados e classificá-los em `migrar`, `adaptar`, `adiar` ou `descartar`, priorizando núcleo mínimo para perfil conservador.
-- Racional: permite entrega incremental sem bloquear feature por migração total.
-- Alternativas consideradas:
-  - Migração total de uma vez: rejeitada por alto risco de regressão.
-  - Não migrar e manter lógica em distribuição: rejeitada por conflito com política multi-repositório.
+<!-- Decisão 5 (migração de módulos legados) removida: migração de módulos legados não será realizada nesta feature. -->
 
 ## Decisão 6: Núcleo mínimo da feature
 - Decisão: habilitar no perfil padrão somente módulos essenciais (núcleo, acessibilidade, navegação básica, dired básico e shell básico seguro), mantendo Java/Java LSP/LaTeX/GPTel/layout IDE como opcionais desabilitados.

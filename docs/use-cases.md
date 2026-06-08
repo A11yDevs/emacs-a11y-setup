@@ -24,11 +24,10 @@
 - Fluxo principal: falha com mensagem textual acessivel.
 - Testes: handoff-tests (sem contract_version, versao invalida, workspace invalido).
 
-## UC05 - Inventariar modulos legados
-- Story: US3
-- FR: FR-002, FR-003, FR-020
-- Fluxo principal: registrar 13 modulos, dominio, decisao e risco.
-- Testes: modules-tests (inventario e classificacao).
+## UC05 - Inventariar modulos legados (histórico / fora de escopo)
+- Story: US3 (removida)
+- FR: (removidos - migração fora de escopo)
+- Nota: Inventário existente mantido apenas para referência histórica; a migração de módulos legados não será executada nesta feature.
 
 ## UC06 - Aplicar perfil conservador
 - Story: US5

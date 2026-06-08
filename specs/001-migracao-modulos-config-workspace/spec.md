@@ -1,4 +1,4 @@
-# Feature Specification: Migração inicial dos módulos Emacs Lisp e criação do workspace acessível
+# Feature Specification: Criação do workspace acessível e setup inicial
 
 **Feature Branch**: `001-migracao-modulos-config-workspace`
 
@@ -42,21 +42,7 @@ Como componente de bootstrap externo, quero invocar uma entrada estável do setu
 
 ---
 
-### User Story 3 - Migração gradual de módulos legados (Priority: P1)
-
-Como mantenedor do ecossistema, quero inventariar e classificar módulos Emacs Lisp legados para migrar gradualmente a lógica interna ao repositório correto, preservando funcionalidade e sem quebra abrupta de fluxos.
-
-**Why this priority**: A migração controlada é a base para reduzir débito técnico, remover pressupostos Debian-only e cumprir a política multi-repositório.
-
-**Independent Test**: Pode ser testada isoladamente validando inventário inicial, classificação por status (migrado, adaptado, adiado, descartado), remoção de caminhos fixos e documentação de diferenças.
-
-**Acceptance Scenarios**:
-
-1. **Given** módulos legados identificados no repositório de distribuição, **When** a análise de migração é executada, **Then** cada módulo recebe status rastreável e justificativa.
-2. **Given** um módulo com caminho fixo de distribuição, **When** ele é adaptado para o novo pacote, **Then** passa a usar variáveis configuráveis em vez de caminhos rígidos.
-3. **Given** um módulo com dependência externa não resolvida, **When** a migração é planejada, **Then** o módulo pode ser adiado sem bloquear módulos essenciais.
-
----
+<!-- User Story 3 (migração de módulos legados) removida: migração não será realizada nesta feature -->
 
 ### User Story 4 - Diagnóstico interno e relatório acessível (Priority: P2)
 
@@ -116,10 +102,7 @@ Como mantenedor de distribuição, quero continuar empacotando e distribuindo o 
 
 ### Functional Requirements
 
-- **FR-001**: O sistema MUST definir estrutura inicial do pacote emacs-a11y-setup com arquivo principal de entrada, módulos internos por responsabilidade, testes automatizáveis, documentação principal, documentação de handoff, documentação de migração e área de exemplos quando aplicável.
-- **FR-002**: O sistema MUST especificar estratégia de migração gradual dos módulos legados oriundos do repositório de distribuição para o repositório emacs-a11y-setup quando representarem lógica interna do Emacs.
-- **FR-003**: O sistema MUST manter inventário inicial dos módulos legados e classificar cada item como migrado, adaptado, adiado ou descartado, com justificativa.
-- **FR-004**: O sistema MUST preservar intenção funcional dos módulos legados durante migração e MUST eliminar dependências de caminhos rígidos de distribuição, substituindo por configurações parametrizáveis.
+- **FR-001**: O sistema MUST definir estrutura inicial do pacote emacs-a11y-setup com arquivo principal de entrada, módulos internos por responsabilidade, testes automatizáveis, documentação principal e documentação de handoff quando aplicável.
 - **FR-005**: O sistema MUST separar módulos de configuração por domínio funcional, incluindo ao menos: acessibilidade, núcleo/base, pacotes, navegação, shell, layout, atividades, dired, completion e domínios avançados opcionais.
 - **FR-006**: O sistema MUST distinguir módulos obrigatórios e opcionais por perfil, garantindo que falhas em módulos opcionais não bloqueiem diagnóstico nem acesso ao painel.
 - **FR-007**: O sistema MUST estabelecer que o emacs-a11y-setup é responsável por criar, estruturar, manter, diagnosticar, reparar e evoluir semanticamente o workspace separado.
@@ -135,7 +118,6 @@ Como mantenedor de distribuição, quero continuar empacotando e distribuindo o 
 - **FR-017**: O sistema MUST gerar logs e relatórios internos textuais e acessíveis no workspace, incluindo status operacional, falhas, alertas e próximos passos acionáveis.
 - **FR-018**: O sistema MUST aplicar política de segurança para logs e relatórios, evitando exposição de segredos, tokens, chaves e dados sensíveis.
 - **FR-019**: O sistema MUST manter módulos de IA ou que dependam de credenciais como opcionais e desabilitados por padrão em perfil conservador.
-- **FR-020**: O sistema MUST registrar diferenças entre configuração legada e nova organização no documento de migração.
 - **FR-021**: O sistema SHOULD manter compatibilidade futura com publicação em canais de pacote de Emacs, sem tornar essa publicação requisito desta feature.
 - **FR-022**: O sistema MUST definir explicitamente os itens fora de escopo da feature para evitar expansão não controlada de implementação.
 
@@ -157,7 +139,7 @@ Como mantenedor de distribuição, quero continuar empacotando e distribuindo o 
 
 - **WorkspaceAcessivel**: Representa o ambiente isolado do usuário para Emacs Acessível, incluindo arquivos de entrada, configuração interna, logs, relatórios e artefatos de manutenção.
 - **ModuloConfiguracao**: Representa um módulo funcional da configuração (obrigatório ou opcional), com domínio, estado de carregamento, dependências declaradas e política de fallback.
-- **InventarioMigracaoModulo**: Representa o cadastro de módulos legados analisados, com origem histórica, status de migração, decisão e justificativa.
+**InventarioMigracaoModulo**: REMOVED: migração de módulos legados não faz parte desta feature.
 - **PerfilUso**: Representa a seleção de capacidades para um público específico (iniciante, emacspeak-basico, java etc.), definindo módulos habilitados e restrições.
 - **ContratoHandoff**: Representa o acordo versionado entre bootstrap externo e setup interno, com campos de entrada mínimos, validações e resultados esperados.
 - **RelatorioDiagnosticoInterno**: Representa a saída textual acessível do diagnóstico do setup, com evidências, falhas, alertas, caminhos relevantes e próximos passos.
@@ -167,7 +149,6 @@ Como mantenedor de distribuição, quero continuar empacotando e distribuindo o 
 ### Measurable Outcomes
 
 - **SC-001**: Em validação de aceitação da feature, 100 por cento dos cenários de primeiro uso confirmam criação de workspace separado sem alteração de configuração pessoal por padrão.
-- **SC-002**: O inventário inicial cobre 100 por cento dos módulos legados candidatos identificados para análise de migração e classifica cada um com status rastreável.
 - **SC-003**: Em testes de handoff do bootstrap externo para o setup interno, 95 por cento das execuções com dados válidos concluem com relatório textual acionável.
 - **SC-004**: Em simulações com falha de módulo opcional, 100 por cento dos casos mantêm acesso ao diagnóstico interno e registram erro compreensível.
 - **SC-005**: O relatório interno apresenta, em 100 por cento das execuções, status de workspace, perfil ativo, módulos carregados/falhos, estado de fala, alertas e próximos passos.
@@ -190,16 +171,13 @@ Como mantenedor de distribuição, quero continuar empacotando e distribuindo o 
 - **CA-003 Platform scope**: A especificação mantém impacto e compatibilidade conceitual para Windows nativo, Debian/Ubuntu, macOS, Android/Termux e WSL, sem restringir evolução por plataforma.
 - **CA-004 Workspace isolation**: O workspace separado é responsabilidade do setup e a configuração pessoal permanece intocada por padrão.
 - **CA-005 Diagnostics-first**: O diagnóstico interno é obrigatório, textual, acessível e executável mesmo com falhas parciais.
-- **CA-006 Modularity and maintainability**: A configuração é modular por domínio, com separação entre módulos essenciais e opcionais e política de migração gradual.
-- **CA-007 Evidence and governance**: A feature exige inventário de migração, documentação de handoff e documentação de diferenças para rastreabilidade.
+- **CA-006 Modularity and maintainability**: A configuração é modular por domínio, com separação entre módulos essenciais e opcionais.
+- **CA-007 Evidence and governance**: A feature exige documentação de handoff e documentação de diferenças para rastreabilidade.
 - **CA-008 Installer/setup architecture**: A fronteira entre bootstrap externo e setup interno é explícita, com entrada estável e sem dependência de estrutura interna do workspace pelo componente externo.
 - **CA-009 Installation modes**: O escopo é compatível com evolução dos modos minimal, recommended e full ao manter perfil padrão conservador, módulo opcional controlado e entrada estável para integração futura.
 - **CA-010 Bootstrap acceptance**: O setup aceita handoff mínimo versionado, gera diagnóstico acessível e preserva pré-condições para abertura por launcher externo sem duplicar responsabilidades de bootstrap.
-- **CA-011 Multi-repository policy**: A especificação reafirma organização multi-repositório, com migração de lógica interna para emacs-a11y-setup e distribuição externa consumindo contratos públicos.
+- **CA-011 Multi-repository policy**: A especificação reafirma organização multi-repositório e consumo por contratos públicos; migração de módulos legados não é obrigatória para esta feature.
 - **CA-012 Low coupling and versioned contracts**: O contrato de handoff é simples, versionado, documentado e testável, evitando acoplamento indevido entre repositórios.
 
-### Referências de migração inicial
-
-- Fonte histórica de init e módulos legados será tratada como referência de comportamento e inventário, não como dependência rígida de caminho, layout ou distribuição.
-- A análise inicial incluirá mapeamento dos módulos de configuração já existentes para domínios do novo pacote, com decisão rastreável de migrar, adaptar, adiar ou descartar.
+<!-- Referências de migração removidas: migração de módulos legados não será executada nesta feature. -->
 - A integração futura com repositório de distribuição permanece possível por meio de contratos públicos e compatibilidade declarada.

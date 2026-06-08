@@ -1,4 +1,4 @@
-# Specification Quality Checklist: Migração inicial dos módulos Emacs Lisp e criação do workspace acessível
+# Specification Quality Checklist: Criação do workspace acessível e setup inicial
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-06-03
