@@ -394,4 +394,6 @@ If BATCH is non-nil, behave in batch mode and return envelope instead of prompti
 
 (provide 'emacs-a11y-setup-community-packages)
 
+)
+
 ;;; emacs-a11y-setup-community-packages.el ends here
