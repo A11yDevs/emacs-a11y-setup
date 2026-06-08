@@ -173,3 +173,37 @@ Notes:
 - The development launcher reads `~/.emacs-a11y/.env`.
 - For local iteration, edit `~/.emacs-a11y/.env` and point
   `EMACS_A11Y_SETUP_PACKAGE_DIR` to any checkout you want to test.
+
+## Community package commands
+
+- **What:** Comandos públicos para gerenciar pacotes comunitários A11yDevs: list, install, activate, deactivate, remove, update.
+- **API (funções):** `eaacs-list`, `eaacs-install`, `eaacs-activate`, `eaacs-deactivate`, `eaacs-remove`, `eaacs-update`.
+- **Envelope de retorno:** Cada comando retorna um plist/envelope com chaves como `:ok`, `:command`, `:package-id`, `:message`, `:errors`, `:log-path`. Consulte `specs/002-community-package-management/contracts/public-commands.schema.json` para o schema.
+- **Workspace-local:** Passe `workspace-path` para isolar estado e logs; logs por operação são gravados em `<workspace>/.eaacs-logs/`.
+- **Batch vs interactive:** Use o argumento `batch` (non-nil) para execução não interativa; ações destrutivas pedem confirmação no modo interativo.
+- **Política de confiança:** Origem padrão deve pertencer a `https://github.com/A11yDevs/` — pedidos fora desta política são bloqueados.
+- **Quickstart (batch):** Execute `bin/quickstart-batch.sh` (cria `.eaacs-quickstart-workspace` por padrão). Detalhes em `specs/002-community-package-management/quickstart.md`.
+
+## Comandos de Gerenciamento Comunitário (exemplo)
+
+Exemplo de instalação em batch (workspace isolado):
+```elisp
+(eaacs-install "a11y-hello" "a11y-hello.el" t "/tmp/my-eaacs-ws")
+````
+
+Exemplo interativo (confirmations habilitadas para remoção):
+
+```elisp
+(eaacs-install "a11y-hello" "lisp/a11y-hello/a11y-hello.el")
+(eaacs-remove  "a11y-hello") ;; pede confirmação via y-or-n-p
+```
+
+Observações rápidas:
+
+Use workspace-path para testes automatizados; isso garante que .eaacs-logs e o state registry fiquem dentro do workspace.
+
+Ao rodar em CI ou em scripts, passe batch para evitar prompts interativos.
+
+Logs por operação são gravados em <workspace>/.eaacs-logs/ e o caminho aparece no envelope retornado em :log-path.
+
+A validação de origem (trust policy) bloqueia repositórios fora de https://github.com/A11yDevs/ por padrão.

@@ -1,118 +1,39 @@
-# Package-Requires metadata validation checklist
+# Checklist: Package-Requires validation
 
-Purpose: validar que cada pacote no monorepo declara `Package-Requires` compatível com o sistema de pacotes do Emacs.
+Objetivo: Validar automaticamente os cabeçalhos Lisp (`;;;`) e a consistência de `Package-Requires` nos pacotes sob `lisp/`.
 
-Evidence path: `specs/002-community-package-management/artifacts/package-requires/`
+Critérios de validação
+- Cada pacote em `lisp/<nome-pacote>/` deve conter:
+  - Cabeçalho com `Package-Requires` presente.
+  - `Package-Requires` listado como uma lista de pares `(DEPENDENT . VERSION)` onde `VERSION` é um número ou string de versão.
+  - `;;;###autoload` em pontos públicos quando aplicável.
+- `Package-Requires` não deve declarar dependências duplicadas.
+- Versões devem usar formato semântico simples (ex.: `0.1`, `1.2.3`) ou ser o número mínimo necessário.
+- Dependências listadas em `Package-Requires` devem corresponder a features realmente requeridas pelo código (verificar `require`/`provide` simples).
+- Pacotes locais (ex.: `a11y-*` no mesmo repositório) podem usar `:local` na checagem manual (apenas alerta automático).
+- Em caso de falha, o checklist deve indicar: arquivo, regra violada e sugestão de correção.
 
-Automated helper: use `scripts/validate-metadata.sh` (instalado no repositório) or run the following emacs-lisp scanner.
+Passos executáveis (manual)
+1. Procurar diretórios de pacote em `lisp/` (cada subdiretório com `.el` principal).
+2. Para cada pacote:
+   - Abrir o arquivo principal e localizar a linha `Package-Requires`.
+   - Validar sintaxe e formato das entradas.
+   - Verificar se há `require` de features não presentes em `Package-Requires`.
+   - Registrar alertas/erros em formato legível (arquivo:linha — problema — sugestão).
+3. Resumo final:
+   - Número de pacotes verificados.
+   - Número de avisos.
+   - Número de erros (falhas bloqueantes).
 
-Steps:
+Exemplos de mensagens
+- `ERROR: lisp/a11y-foo/a11y-foo.el:12 — missing Package-Requires header`
+- `WARN: lisp/a11y-bar/a11y-bar.el:45 — declared dependency 'baz' not found in code; confirm intent`
+- `FIX: lisp/a11y-baz/a11y-baz.el — change Package-Requires: ((emacs "29.1"))`
 
-- [ ] Run the repository metadata validator (if available):
-  - Command: `chmod +x scripts/validate-metadata.sh && ./scripts/validate-metadata.sh specs/002-community-package-management/artifacts/package-requires`.
-  - Output: `specs/002-community-package-management/artifacts/package-requires/report.json` and `report.txt`.
-- [ ] Verify each `lisp/<package>/*.el` containing `Package-Requires` has valid syntax and version tuples `(pkg "MAJOR.MINOR")` where applicable.
-- [ ] For any package missing `Package-Requires`, record filename and reason in `missing-package-requires.txt`.
-- [ ] Check `provide` and final `;;; <file> ends here` footer are present for each package file; record violations in `provide-missing.txt`.
-- [ ] Confirm that `Package-Requires` versions do not reference non-standard package names without justification; record exceptions with issue links.
-- [ ] For each violation, create a tracking issue and reference it in `specs/002-community-package-management/artifacts/package-requires/ISSUES.md` with remediation steps.
-
-Notes:
-
-- Prefer automated validation (`scripts/validate-metadata.sh`) to manual checks. If the script is updated, include its version/hash in the report.
-- Use CI to fail on critical metadata errors; for minor issues prefer blocking PRs until fixed.
-# Checklist: Validação de `Package-Requires`
-
-Objetivo: validar `Package-Requires` em todos os arquivos de `lisp/` e gerar um artefato JSON com as dependências coletadas para auditoria.
-
-Local de evidência: `specs/002-community-package-management/artifacts/package-requires.json`
-
-Como usar
-- Execute os passos em um ambiente de teste (usar `HOME` isolado se desejar).
-
-Passos executáveis
-
-- [ ] Preparar diretório de artefatos
-
-  ```bash
-  mkdir -p specs/002-community-package-management/artifacts
-  ```
-
-- [ ] Extrair cabeçalhos `Package-Requires` de todos os arquivos `lisp/*.el`
-
-  - Comando shell (requere `rg`/`ripgrep`):
-
-  ```bash
-  rg "^;;\s*-\*-.*Package-Requires:|^;;\s*Package-Requires:" -n lisp/ || true
-  ```
-
-  - Alternativa Emacs batch: gera JSON com detalhes (arquivo `extract-package-requires.el` temporário):
-
-  ```bash
-  cat > /tmp/extract-package-requires.el <<'EL'
-(require 'json)
-
-(defun extract-package-requires (dir out)
-  (let ((files (directory-files-recursively dir "\\.el$"))
-        (acc '()))
-    (dolist (f files)
-      (with-temp-buffer
-        (insert-file-contents f)
-        (goto-char (point-min))
-        (let ((pr (when (re-search-forward "^\s-*;;\s-*Package-Requires:\s-*\(.*\)$" nil t)
-                    (match-string 1))))
-          (push (list :file (file-relative-name f)
-                      :package-requires (and pr (string-trim pr))) acc))))
-    (with-temp-file out
-      (insert (json-encode acc)))))
-
-(extract-package-requires "lisp" "specs/002-community-package-management/artifacts/package-requires.json")
-EL
-
-  emacs --batch -Q -l /tmp/extract-package-requires.el
-  ```
-
-- [ ] Validar consistência de versões e ausência de entradas duplicadas
-
-  - Abra o JSON gerado e verifique pacotes repetidos com versões conflitantes.
-  - Pode usar `jq` para inspeção:
-
-  ```bash
-  jq '.' specs/002-community-package-management/artifacts/package-requires.json
-  ```
-
-- [ ] Gerar relatório resumido (texto) indicando conflitos e sugestões
-
-  - Comando exemplo (bash + jq):
-
-  ```bash
-  jq -r '.[] | "File: \(.file) -- Package-Requires: \(.package-requires)"' \
-    specs/002-community-package-management/artifacts/package-requires.json > \
-    specs/002-community-package-management/artifacts/package-requires-summary.txt
-  ```
-
-- [ ] Anexar evidência ao spec
-
-  - Confirme que os arquivos `package-requires.json` e `package-requires-summary.txt` existem em `specs/002-community-package-management/artifacts/` e referencie-os no PR.
-
-Critérios de aceitação
-
-- O artefato `package-requires.json` existe e lista todos os arquivos `.el` analisados.
-- Não existem versões conflitantes para o mesmo pacote sem justificativa documentada.
-- Checklist deve ser executável em CI usando Emacs batch e ferramentas comuns (`jq`, `rg`).
+Critério de aceite
+- Checklist criado em specs/002-community-package-management/checklists/package-requires-validation.md
+- Instruções claras para executar manualmente e interpretar resultados.
+- (Opcional) Script automatizado separado para execução em CI.
 
 Notas
-
-- Esta checklist é um esqueleto executável. Scripts auxiliares podem ser movidos para `specs/002-community-package-management/scripts/` e versionados.
-# Checklist: Package-Requires Validation
-
-Purpose: Validar que cada pacote no monorepo declara `Package-Requires` consistente com seu uso.
-
-- [ ] Definir escopo: lista de pacotes a validar (ex.: todos em `lisp/*`)
-- [ ] Verificar presença de cabeçalho `Package-Requires` em cada main-file
-- [ ] Comparar versões declaradas com dependências reais detectadas (quando possível)
-- [ ] Marcar pacotes não conformes e gerar issue com diagnóstico
-- [ ] Registrar evidência (arquivo de saída JSON) em `specs/002-community-package-management/artifacts/`
-
-Notes:
-- Esta é uma checklist esqueleto — preencha com comandos e exemplos específicos durante a execução.
+- Recomenda-se implementar um script Emacs Lisp separado para automação (p.ex. `scripts/check-package-requires.el`) e integrá-lo a CI posteriormente.
