@@ -44,8 +44,8 @@ Purpose: Project initialization and basic structure for feature implementation.
 
 Purpose: Core validations and safeguards that MUST be completed before user story implementations.
 
-- [ ] T005 [P] Add diagnostics-first checklist: `specs/002-community-package-management/checklists/diagnostics-checklist.md` (itens executáveis para `doctor/check` antes de mutações).
-- [ ] T006 [P] Add workspace isolation checklist: `specs/002-community-package-management/checklists/workspace-isolation.md` (itens para garantir que `~/.emacs.d`/config pessoal não seja sobrescrito).
+- [x] T005 [P] Add diagnostics-first checklist: `specs/002-community-package-management/checklists/diagnostics-checklist.md` (itens executáveis para `doctor/check` antes de mutações).
+- [x] T006 [P] Add workspace isolation checklist: `specs/002-community-package-management/checklists/workspace-isolation.md` (itens para garantir que `~/.emacs.d`/config pessoal não seja sobrescrito).
 
 ## Governance
 
@@ -70,7 +70,7 @@ The Constitution Check task T028 has been removed. Proceed with implementations 
 
 ### Tests for User Story 1
 
-- [ ] T008 Adicionar cobertura ERT para list/install/activate/deactivate/remove/update em test/emacs-a11y-setup-community-packages-tests.el, incluindo lista vazia e repetição idempotente.
+- [x] T008 Adicionar cobertura ERT para list/install/activate/deactivate/remove/update em test/emacs-a11y-setup-community-packages-tests.el, incluindo lista vazia e repetição idempotente.
 
 ### Implementation for User Story 1
 
